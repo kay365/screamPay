@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.AgentMapper">
+
+	<resultMap type="com.qh.pay.domain.Agent" id="rmMerchant">
+		<result property="tOne" column="t_one" typeHandler="com.qh.common.config.JsonTypeHandler" />
+		<result property="dZero" column="d_zero" typeHandler="com.qh.common.config.JsonTypeHandler" />
+		<result property="paid" column="paid" typeHandler="com.qh.common.config.JsonTypeHandler" />
+	</resultMap>	
+	
+	<select id="list" resultMap="rmMerchant">
+		select `agent_number`,`agent_id`,status,audit_status,level,parent_agent,merchants_name,t_one,d_zero,paid
+		 from agent
+        <where>  
+		 	<if test="agentNumber != null and agentNumber != ''"> and agent_number = #{agentNumber}</if>
+		 	<if test="merchantsName != null and merchantsName != ''"> and merchants_name = #{merchantsName}</if>
+		 	<if test="status != null and status != ''"> and status = #{status}</if>
+		 	<if test="auditStatus != null and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by agent_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="listAgent" resultMap="rmMerchant">
+		select `agent_id`,`agent_number`,`status`,`audit_status`,`level`,`parent_agent`,`create_time`,
+		`modify_time`,`agent_type`,`manager_name`,`manager_phone`,`manager_pass`,`contract_effective_time`,
+		`enable_time`,`merchants_name`,`merchants_short_name`,`merchants_industry`,`merchants_industry_code`,
+		`merchants_sub_industry`,`merchants_sub_industry_code`,`contacts`,`contacts_phone`,`contacts_email`,
+		`contacts_qq`,`province`,`province_code`,`city`,`city_code`,`legaler_name`,`legaler_card_type`,
+		`legaler_card_number`,`legaler_card_effective_time`,`legaler_card_pic_front`,`legaler_card_pic_back`,
+		`account_type`,`account_province`,`account_province_code`,`account_city`,`account_city_code`,`account_bank`,
+		`account_bank_code`,`account_bank_branch`,`account_bank_branch_code`,`account_open_person`,
+		`account_open_number`,`account_open_card_number`,`account_open_phone`,`account_pic`,`t_one`,`d_zero`,`paid`
+		 from agent
+        <where>  
+		 	<if test="agentNum != null and agentNum != ''"> and agent_number = #{agentNum}</if>
+		 	<if test="merchantsName != null and merchantsName != ''"> and merchants_name like CONCAT('%','${merchantsName}','%')</if>
+		 	<if test="status != null and status != ''"> and status = #{status}</if>
+		 	<if test="auditStatus != null and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+		 	<if test="pAgent != null and pAgent != ''"> and parent_agent = #{pAgent}</if>
+		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by agent_id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(1) from agent
+		<where>  
+		  	<if test="agentNum != null and agentNum != ''"> and agent_number = #{agentNum}</if>
+		 	<if test="merchantsName != null and merchantsName != ''"> and merchants_name like CONCAT('%','${merchantsName}','%')</if>
+		 	<if test="status != null and status != ''"> and status = #{status}</if>
+		 	<if test="auditStatus != null and auditStatus != ''"> and audit_status = #{auditStatus}</if>
+		 	<if test="pAgent != null and pAgent != ''"> and parent_agent = #{pAgent}</if>
+		</where>
+	</select>
+	 <insert id="save" parameterType="com.qh.pay.domain.Agent" useGeneratedKeys="true" keyProperty="agentId">
+		insert into agent
+		(
+			`agent_number`, 
+			`status`, 
+			`audit_status`, 
+			`level`, 
+			`parent_agent`, 
+			`create_time`, 
+			`modify_time`, 
+			`agent_type`, 
+			`manager_name`, 
+			`manager_phone`, 
+			`manager_pass`, 
+			`contract_effective_time`, 
+			`enable_time`, 
+			`merchants_name`, 
+			`merchants_short_name`, 
+			`merchants_industry`, 
+			`merchants_industry_code`, 
+			`merchants_sub_industry`, 
+			`merchants_sub_industry_code`, 
+			`contacts`, 
+			`contacts_phone`, 
+			`contacts_email`, 
+			`contacts_qq`, 
+			`province`, 
+			`province_code`, 
+			`city`, 
+			`city_code`, 
+			`legaler_name`, 
+			`legaler_card_type`, 
+			`legaler_card_number`, 
+			`legaler_card_effective_time`, 
+			`legaler_card_pic_front`, 
+			`legaler_card_pic_back`, 
+			`account_type`, 
+			`account_province`, 
+			`account_province_code`, 
+			`account_city`, 
+			`account_city_code`, 
+			`account_bank`, 
+			`account_bank_code`, 
+			`account_bank_branch`, 
+			`account_bank_branch_code`, 
+			`account_open_person`, 
+			`account_open_number`, 
+			`account_open_card_number`, 
+			`account_open_phone`, 
+			`account_pic`, 
+			`t_one`, 
+			`d_zero`, 
+			`paid`
+		)
+		values
+		(
+			#{agentNumber}, 
+			#{status}, 
+			#{auditStatus}, 
+			#{level}, 
+			#{parentAgent}, 
+			#{createTime}, 
+			#{modifyTime}, 
+			#{agentType}, 
+			#{managerName}, 
+			#{managerPhone}, 
+			#{managerPass}, 
+			#{contractEffectiveTime}, 
+			#{enableTime}, 
+			#{merchantsName}, 
+			#{merchantsShortName}, 
+			#{merchantsIndustry}, 
+			#{merchantsIndustryCode}, 
+			#{merchantsSubIndustry}, 
+			#{merchantsSubIndustryCode}, 
+			#{contacts}, 
+			#{contactsPhone}, 
+			#{contactsEmail}, 
+			#{contactsQq}, 
+			#{province}, 
+			#{provinceCode}, 
+			#{city}, 
+			#{cityCode}, 
+			#{legalerName}, 
+			#{legalerCardType}, 
+			#{legalerCardNumber}, 
+			#{legalerCardEffectiveTime}, 
+			#{legalerCardPicFront}, 
+			#{legalerCardPicBack}, 
+			#{accountType}, 
+			#{accountProvince}, 
+			#{accountProvinceCode}, 
+			#{accountCity}, 
+			#{accountCityCode}, 
+			#{accountBank}, 
+			#{accountBankCode}, 
+			#{accountBankBranch}, 
+			#{accountBankBranchCode}, 
+			#{accountOpenPerson}, 
+			#{accountOpenNumber}, 
+			#{accountOpenCardNumber}, 
+			#{accountOpenPhone}, 
+			#{accountPic}, 
+			#{tOne,typeHandler=com.qh.common.config.JsonTypeHandler}, 
+			#{dZero,typeHandler=com.qh.common.config.JsonTypeHandler}, 
+			#{paid,typeHandler=com.qh.common.config.JsonTypeHandler}
+		)
+	</insert>
+	<update id="update" parameterType="com.qh.pay.domain.Agent">
+		update agent 
+		<set>
+			<if test="agentNumber != null">`agent_number` = #{agentNumber}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="auditStatus != null">`audit_status` = #{auditStatus}, </if>
+			<if test="level != null">`level` = #{level}, </if>
+			<if test="parentAgent != null">`parent_agent` = #{parentAgent}, </if>
+			<if test="createTime != null">`create_time` = #{createTime}, </if>
+			<if test="modifyTime != null">`modify_time` = #{modifyTime}, </if>
+			<if test="agentType != null">`agent_type` = #{agentType}, </if>
+			<if test="managerName != null">`manager_name` = #{managerName}, </if>
+			<if test="managerPhone != null">`manager_phone` = #{managerPhone}, </if>
+			<if test="managerPass != null">`manager_pass` = #{managerPass}, </if>
+			<if test="contractEffectiveTime != null">`contract_effective_time` = #{contractEffectiveTime}, </if>
+			<if test="enableTime != null">`enable_time` = #{enableTime}, </if>
+			<if test="merchantsName != null">`merchants_name` = #{merchantsName}, </if>
+			<if test="merchantsShortName != null">`merchants_short_name` = #{merchantsShortName}, </if>
+			<if test="merchantsIndustry != null">`merchants_industry` = #{merchantsIndustry}, </if>
+			<if test="merchantsIndustryCode != null">`merchants_industry_code` = #{merchantsIndustryCode}, </if>
+			<if test="merchantsSubIndustry != null">`merchants_sub_industry` = #{merchantsSubIndustry}, </if>
+			<if test="merchantsSubIndustryCode != null">`merchants_sub_industry_code` = #{merchantsSubIndustryCode}, </if>
+			<if test="contacts != null">`contacts` = #{contacts}, </if>
+			<if test="contactsPhone != null">`contacts_phone` = #{contactsPhone}, </if>
+			<if test="contactsEmail != null">`contacts_email` = #{contactsEmail}, </if>
+			<if test="contactsQq != null">`contacts_qq` = #{contactsQq}, </if>
+			<if test="province != null">`province` = #{province}, </if>
+			<if test="provinceCode != null">`province_code` = #{provinceCode}, </if>
+			<if test="city != null">`city` = #{city}, </if>
+			<if test="cityCode != null">`city_code` = #{cityCode}, </if>
+			<if test="legalerName != null">`legaler_name` = #{legalerName}, </if>
+			<if test="legalerCardType != null">`legaler_card_type` = #{legalerCardType}, </if>
+			<if test="legalerCardNumber != null">`legaler_card_number` = #{legalerCardNumber}, </if>
+			<if test="legalerCardEffectiveTime != null">`legaler_card_effective_time` = #{legalerCardEffectiveTime}, </if>
+			<if test="legalerCardPicFront != null">`legaler_card_pic_front` = #{legalerCardPicFront}, </if>
+			<if test="legalerCardPicBack != null">`legaler_card_pic_back` = #{legalerCardPicBack}, </if>
+			<if test="accountType != null">`account_type` = #{accountType}, </if>
+			<if test="accountProvince != null">`account_province` = #{accountProvince}, </if>
+			<if test="accountProvinceCode != null">`account_province_code` = #{accountProvinceCode}, </if>
+			<if test="accountCity != null">`account_city` = #{accountCity}, </if>
+			<if test="accountCityCode != null">`account_city_code` = #{accountCityCode}, </if>
+			<if test="accountBank != null">`account_bank` = #{accountBank}, </if>
+			<if test="accountBankCode != null">`account_bank_code` = #{accountBankCode}, </if>
+			<if test="accountBankBranch != null">`account_bank_branch` = #{accountBankBranch}, </if>
+			<if test="accountBankBranchCode != null">`account_bank_branch_code` = #{accountBankBranchCode}, </if>
+			<if test="accountOpenPerson != null">`account_open_person` = #{accountOpenPerson}, </if>
+			<if test="accountOpenNumber != null">`account_open_number` = #{accountOpenNumber}, </if>
+			<if test="accountOpenCardNumber != null">`account_open_card_number` = #{accountOpenCardNumber}, </if>
+			<if test="accountOpenPhone != null">`account_open_phone` = #{accountOpenPhone}, </if>
+			<if test="accountPic != null">`account_pic` = #{accountPic}, </if>
+			<if test="tOne != null">`t_one` = #{tOne,typeHandler=com.qh.common.config.JsonTypeHandler}, </if>
+			<if test="dZero != null">`d_zero` = #{dZero,typeHandler=com.qh.common.config.JsonTypeHandler}, </if>
+			<if test="paid != null">`paid` = #{paid,typeHandler=com.qh.common.config.JsonTypeHandler}</if>
+		</set>
+		where agent_id = #{agentId}
+	</update>
+	
+	<delete id="remove">
+		delete from agent where agent_id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from agent where agent_id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<update id="batchqiyong">
+		update agent set status = 1
+		where agent_id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	<update id="batchjinyong">
+		update agent set status = 0
+		where agent_id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	
+	<update id="batchAudit">
+		update agent set audit_status = #{auditStatus}
+		where agent_id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</update>
+	
+	<delete id="removeByMerchNo">
+		delete from agent where agent_number = #{value}
+	</delete>
+	
+	<delete id="batchRemoveByMerchNo">
+		delete from agent where agent_number in 
+		<foreach item="agentNumber" collection="array" open="(" separator="," close=")">
+			#{agentNumber}
+		</foreach>
+	</delete>
+
+</mapper>

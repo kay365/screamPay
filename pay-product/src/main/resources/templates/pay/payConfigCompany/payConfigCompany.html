@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left">
+							<button shiro:hasPermission="pay:payConfigCompany:add" type="button" class="btn  btn-primary" onclick="add()">
+								<i class="fa fa-plus" aria-hidden="true"></i>添加
+							</button>
+							<button shiro:hasPermission="pay:payConfigCompany:batchRemove" type="button" class="btn  btn-danger"
+								onclick="batchRemove()">
+								<i class="fa fa-trash" aria-hidden="true"></i>删除
+							</button>
+							<button shiro:hasPermission="pay:payConfigCompany:setting" type="button" class="btn  btn-warning"
+								onclick="setting()">
+								<i class="fa fa-cogs" aria-hidden="true"></i>设置
+							</button>
+							<button shiro:hasPermission="pay:payConfigCompany:payChannelType" type="button" class="btn  btn-warning"
+									onclick="payChannelType()">
+								<i class="fa fa-briefcase" aria-hidden="true"></i>通道分类管理
+							</button>
+						</div>
+						<div class="columns pull-right">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						<div class="columns pull-right col-md-2 padding">
+							<select id="ifClose" name="ifClose" class="form-control">
+								<option value="">状态</option>
+								<option value="0">开启</option>
+								<option value="1">关闭</option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 padding">
+							<select id="outChannel" name="outChannel" class="form-control">
+								<option value="">所有支付方式</option>
+								<option th:each="outChannels:${outChannels}" th:value="${outChannels.key}" th:text="${outChannels.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select id="company" class="form-control">
+								<option value="">所有支付公司</option>
+								<option th:each="payCompany:${payCompanys}" th:value="${payCompany.key}" th:text="${payCompany.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 padding">
+							<select id="payChannelType" class="form-control">
+								<option value="">所有通道分类</option>
+								<option th:each="payChannelType:${payChannelTypes}" th:value="${payChannelType.key}" th:text="${payChannelType.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="payMerch" type="text" class="form-control"
+								placeholder="商户号">
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+		<div>
+			<script type="text/javascript">
+				var s_edit_h = 'hidden';
+				var s_remove_h = 'hidden';
+				var s_resetPwd_h = 'hidden';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:payConfigCompany:edit">
+			<script type="text/javascript">
+				s_edit_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:payConfigCompany:remove">
+			<script type="text/javascript">
+				var s_remove_h = '';
+			</script>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var payCompanys = [[${payCompanys}]];
+	    var outChannels = [[${outChannels}]];
+	    var payChannelTypes = [[${payChannelTypes}]];
+	    var paymentMethods = [[${paymentMethods}]];
+	    var payWay = [[${payWay}]];
+	    if(payWay == 'acp'){
+	    	$('#outChannel').parent().hide();
+	    	$(".btn-warning").hide();
+	    }else
+	    	$('#outChannel').find("option[value=acp]").remove();
+	    $('#outChannel').val(payWay);
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/appjs/pay/payConfigCompany/payConfigCompany.js"></script>
+</body>
+</html>

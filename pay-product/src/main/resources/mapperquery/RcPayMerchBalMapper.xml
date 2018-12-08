@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.moneyacct.querydao.RcPayMerchBalDao">
+
+	<select id="findOnePayMerch" resultType="com.qh.moneyacct.domain.MoneyacctDO">
+		select 
+			SUM(CASE WHEN fee_type = 14 THEN tran_amt ELSE 0 END) AS totalEntry,
+		 	SUM(CASE WHEN fee_type = 16 THEN tran_amt ELSE 0 END)AS totalOff,
+		 	SUM(CASE WHEN fee_type in(15,17) THEN tran_amt ELSE 0 END) AS totalHandFee
+			from record_pay_merch_bal a 
+			<where>
+				<if test="payCompany != null and payCompany != ''">
+					 and a.pay_company = #{payCompany}
+				</if>
+				<if test="payMerch != null and payMerch != ''">
+					 and a.pay_merch = #{payMerch}
+				</if>
+				<if test="outChannel != null and outChannel != ''">
+					 and a.out_channel = #{outChannel}
+				</if>
+			</where>
+	</select>
+	
+	<select id="findPayMerchList" resultType="com.qh.moneyacct.domain.MoneyacctDO">
+		select c.company payCompany,c.pay_merch, 
+			SUM(CASE WHEN fee_type = 14 THEN tran_amt ELSE 0 END) AS totalEntry,
+		 	SUM(CASE WHEN fee_type = 16 THEN tran_amt ELSE 0 END)AS totalOff,
+		 	SUM(CASE WHEN fee_type in(15,17) THEN tran_amt ELSE 0 END) AS totalHandFee
+		 	from (select DISTINCT  a.company,a.pay_merch from pay_config_company a
+			<where>
+				<if test="payCompany != null and payCompany != ''">
+					 and a.company = #{payCompany}
+				</if>
+				<if test="payMerch != null and payMerch != ''">
+					 and a.pay_merch = #{payMerch}
+				</if>
+				
+			</where>
+			<choose>
+	            <when test="sort != null and sort.trim() != ''">
+	                order by ${sort} ${order}
+	            </when>
+        	</choose>
+			<if test="offset != null and limit != null">
+				limit #{offset}, #{limit}
+			</if>) c LEFT JOIN record_pay_merch_bal b on c.company = b.pay_company AND c.pay_merch = b.pay_merch 
+					GROUP BY c.company,c.pay_merch;
+	</select>
+	
+	<select id="findPayMerchListCount" resultType="int">
+		select count(distinct a.company,a.pay_merch) from pay_config_company a
+			<where>
+				<if test="payCompany != null and payCompany != ''">
+					 and a.company = #{payCompany}
+				</if>
+				<if test="payMerch != null and payMerch != ''">
+					 and a.pay_merch = #{payMerch}
+				</if>
+				<if test="outChannel != null and outChannel != ''">
+					 and a.out_channel = #{outChannel}
+				</if>
+			</where>
+	</select>
+	
+	<select id="findPayMerchDetailList" resultType="com.qh.pay.domain.RecordPayMerchBalDO">
+		select pay_company,pay_merch,out_channel,`order_no`,`merch_no`,`fee_type`,`order_type`,`before_amt`,`tran_amt`,`after_amt`,`profit_loss`,`crt_date` from record_pay_merch_bal
+        <where>
+  		  	<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+  		  	<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+	  		<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		<if test="payCompany != null and payCompany != ''">
+				 and pay_company = #{payCompany}
+			</if>
+			<if test="payMerch != null and payMerch != ''">
+				 and pay_merch = #{payMerch}
+			</if>
+			<if test="outChannel != null and outChannel != ''">
+				 and out_channel = #{outChannel}
+			</if>
+  		  	<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+  		 	<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+  		  	<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+	  	</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by crt_date desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="findPayMerchDetailListCount" resultType="int">
+		select count(1) from record_pay_merch_bal
+        <where>  
+  		  	<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+  		  	<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+  		  	<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		<if test="payCompany != null and payCompany != ''">
+				 and pay_company = #{payCompany}
+			</if>
+			<if test="payMerch != null and payMerch != ''">
+				 and pay_merch = #{payMerch}
+			</if>
+			<if test="outChannel != null and outChannel != ''">
+				 and out_channel = #{outChannel}
+			</if>
+  		  	<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+  		 	<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+  		  	<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+	  	</where>
+	</select>
+	<select id="findPayMerchDetailListFooter" resultType="com.qh.pay.domain.FooterDO">
+		select sum(if(profit_loss=1,tran_amt,-tran_amt)) tranAmt
+		from record_pay_merch_bal
+		<where>
+			<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+			<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+			<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+			<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		<if test="payCompany != null and payCompany != ''">
+				 and pay_company = #{payCompany}
+			</if>
+			<if test="payMerch != null and payMerch != ''">
+				 and pay_merch = #{payMerch}
+			</if>
+			<if test="outChannel != null and outChannel != ''">
+				 and out_channel = #{outChannel}
+			</if>
+			<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+			<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+			<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+		</where>
+	</select>
+	
+	
+	<select id="findPayMerchForOutChannelList" resultType="com.qh.moneyacct.domain.MoneyacctDO">
+		select c.company payCompany,c.pay_merch,c.out_channel, 
+			SUM(CASE WHEN fee_type = 14 THEN tran_amt ELSE 0 END) AS totalEntry,
+		 	SUM(CASE WHEN fee_type = 16 THEN tran_amt ELSE 0 END)AS totalOff,
+		 	SUM(CASE WHEN fee_type in(15,17) THEN tran_amt ELSE 0 END) AS totalHandFee
+		 	from (select a.company,a.pay_merch,a.out_channel from pay_config_company a
+			<where>
+				<if test="payCompany != null and payCompany != ''">
+					 and a.company = #{payCompany}
+				</if>
+				<if test="payMerch != null and payMerch != ''">
+					 and a.pay_merch = #{payMerch}
+				</if>
+				<if test="outChannel != null and outChannel != ''">
+					 and a.out_channel = #{outChannel}
+				</if>
+			</where>
+			<choose>
+	            <when test="sort != null and sort.trim() != ''">
+	                order by ${sort} ${order}
+	            </when>
+        	</choose>
+			<if test="offset != null and limit != null">
+				limit #{offset}, #{limit}
+			</if>) c LEFT JOIN record_pay_merch_bal b on c.company = b.pay_company AND c.pay_merch = b.pay_merch and c.out_channel = b.out_channel 
+					GROUP BY c.company,c.pay_merch,c.out_channel;
+	</select>
+</mapper>

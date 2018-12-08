@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left col-md-2 nopadding" style="margin-right:15px" th:remove="${merchNo}? all : none">
+							<div class = "merchNo"></div>
+							<input type="hidden" id ="merchNo">
+						</div>
+						<div class="columns pull-left col-md-2 nopadding">
+							<input id="orderNo" type="text" class="form-control"
+								placeholder="业务单号" pattern="">
+						</div>
+						<div class="columns pull-left col-md-1 nopadding" th:remove="${merchNo}? all : none">
+								<select id="payCompany" name="payCompany" class="form-control">
+								<option value="">支付公司</option>
+								<option th:each="payCompany:${payCompanys}" th:value="${payCompany.key}" th:text="${payCompany.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-left col-md-1 nopadding">
+							<select id="orderState" name="orderState" class="form-control">
+								<option value="">订单状态</option>
+								<option th:each="orderState:${orderStates}" th:value="${orderState.key}" th:text="${orderState.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-left col-md-1 nopadding">
+							<select id="outChannel" name="outChannel" class="form-control">
+								<option value="">渠道</option>
+								<option th:each="outChannels:${outChannels}" th:value="${outChannels.key}" th:text="${outChannels.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-left col-md-3 nopadding">
+							<input id="beginDate"  type="text"  class="form-control form_datetime" style="width:110px;float: left" placeholder="开始时间" title="开始时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+							<span style="vertical-align:top;padding: 8px;float: left">-</span>
+							<input id="endDate" type="text"  class="form-control form_datetime" style="width:110px; float: left" placeholder="结束时间" title="结束时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+						</div>
+						<div class="columns pull-left">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		    var outChannels = [[${outChannels}]];
+		    var payCompanys = [[${payCompanys}]];
+		    var orderStates = [[${orderStates}]];
+		    var merchNo = [[${merchNo}]];
+		    var merchNo = [[${merchNo}]];
+		    var merchNos = null;
+		/*]]>*/
+	</script>
+	<div th:remove="${merchNo}? all : none">
+		<script th:inline="javascript">
+			merchNos = [[${merchNos}]];
+		</script>
+	</div>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/jquery.selectBoxIt.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/orderQuery/orderLose.js"></script>
+</body>
+</html>

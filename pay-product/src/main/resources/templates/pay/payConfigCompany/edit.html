@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">支付公司：</label>
+								<div class="col-sm-4">
+									<select id="company" name="company" class="form-control" onfocus = "this.defaultIndex=this.selectedIndex;" 
+											onchange="this.selectedIndex=this.defaultIndex;">
+										<option th:each="payCompany:${payCompanys}" th:value="${payCompany.key}" th:text="${payCompany.value}"
+										th:if="${payCompany.key eq payConfigCompany.company}" th:selected="selected"></option>
+									</select>
+								</div>
+								<label class="col-sm-2 control-label">商户号：</label>
+								<div class="col-sm-4">
+									<input id="payMerch" name="payMerch" th:value="${payConfigCompany.payMerch}" class="form-control" type="text" readonly="readonly">
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">支付方式：</label>
+								<div class="col-sm-4">
+									<select id="outChannel" name="outChannel" class="form-control" onfocus = "this.defaultIndex=this.selectedIndex;" 
+											onchange="this.selectedIndex=this.defaultIndex;">
+										<option th:each="outChannel:${outChannels}" th:value="${outChannel.key}" th:text="${outChannel.value}"
+										th:if="${outChannel.key eq payConfigCompany.outChannel}" th:selected="selected"></option>
+									</select>
+								</div>
+								<label class="col-sm-2 control-label">通道分类：</label>
+								<div class="col-sm-4">
+									<select id="payChannelType" name="payChannelType" class="form-control">
+										<option th:each="payChannelType:${payChannelTypes}" th:value="${payChannelType.key}" th:text="${payChannelType.value}" 
+										 th:selected="${payChannelType.key eq payConfigCompany.payChannelType}"></option>
+									</select>
+								</div>
+								
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">是否关闭 ：</label>
+								<div class="col-sm-4">
+									<label class="radio-inline"> <input
+										type="radio" name="ifClose" value="0" th:checked="${0 eq payConfigCompany.ifClose}"/>
+										开启
+									</label> <label class="radio-inline"> <input
+										type="radio" name="ifClose" value="1" th:checked="${1 eq payConfigCompany.ifClose}"/>
+										关闭
+									</label>
+								</div>
+								<label class="col-sm-2 control-label">结算方式：</label>
+								<div class="col-sm-4">
+									<select id="paymentMethod" name="paymentMethod" class="form-control" onChange="pmChange(this)">
+										<option value="">请选择</option>
+										<option th:each="paymentMethod:${paymentMethods}" th:value="${paymentMethod.key}" th:text="${paymentMethod.value}" th:selected="${paymentMethod.key eq payConfigCompany.paymentMethod}"></option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">成本费率：</label>
+								<div class="col-sm-2">
+									<input id="costRate" name="costRate" class="form-control" th:value="${payConfigCompany.costRate}" type="number" max="100" maxlength="6" required="required">
+								</div>
+								<div class="col-sm-2">
+									<select id="costRateUnit" name="costRateUnit" class="form-control">
+										<option value = "1" th:selected="${1 eq payConfigCompany.costRateUnit}">%/笔</option>
+										<option value = "2" th:selected="${2 eq payConfigCompany.costRateUnit}">元/笔</option>
+									</select>
+								</div>
+								<label class="col-sm-2 control-label">三方限额：</label>
+								<div class="col-sm-4">
+									<input id="capitalPool" name="capitalPool" th:value="${payConfigCompany.capitalPool}" class="form-control" type="number" max="99999999999" min="1" maxlength="11" required="required">
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">单笔最大额：</label>
+								<div class="col-sm-4">
+									<input id="maxPayAmt" name="maxPayAmt"  th:value="${payConfigCompany.maxPayAmt}" class="form-control" type="number" max="99999999" min="1000" maxlength="8">
+								</div>
+								<label class="col-sm-2 control-label">单笔最小额：</label>
+								<div class="col-sm-4">
+									<input id="minPayAmt" name="minPayAmt" th:value="${payConfigCompany.minPayAmt}" class="form-control" type="number" max="999999" min="1" maxlength="6">
+								</div>
+							</div>
+							<div class="form-group" th:if="${payConfigCompany.outChannel!='acp'}">	
+								<label class="col-sm-2 control-label">单笔最大手续费：</label>
+								<div class="col-sm-4">
+									<input id="maxFee" name="maxFee" th:value="${payConfigCompany.maxFee}" class="form-control" type="number" max="99999999" min="1" maxlength="8">
+								</div>
+								<label class="col-sm-2 control-label">单笔最小手续费：</label>
+								<div class="col-sm-4">
+									<input id="minFee" name="minFee" th:value="${payConfigCompany.minFee}" class="form-control" type="number" max="999999" min="0" maxlength="6">
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">时间段1选择：</label>
+								<div class="col-sm-4">
+									<input id="beginTime1"  type="text" readonly class="form-control form_datetime" style="width:90px;float: left" placeholder="时间段1起" title="时间段1开始时间" data-date-format="hh:ii" data-link-format="hh:ii">
+									<span style="vertical-align:top;padding: 8px;float: left">-</span>
+									<input id="endTime1" type="text" readonly class="form-control form_datetime" style="width:90px; float: left" placeholder="时间段1止" title="时间段1结束时间" data-date-format="hh:ii" data-link-format="hh:ii">
+								</div>
+								<label class="col-sm-2 control-label">时间段2选择：</label>
+								<div class="col-sm-4">
+									<input  id="beginTime2" type="text" readonly class="form-control form_datetime" style="width:90px;;float: left" placeholder="时间段2止" title="时间段2开始时间" data-date-format="hh:ii" data-link-format="hh:ii">
+									<span style="vertical-align:top;padding: 8px;float: left">-</span>
+									<input  id="endTime2" type="text" readonly class="form-control form_datetime" style="width:90px;;float: left" placeholder="时间段2止" title="时间段2结束时间" data-date-format="hh:ii" data-link-format="hh:ii">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">支付时间段：</label>
+								<div class="col-sm-4">
+									<input id="payPeriod" name="payPeriod" th:value="${payConfigCompany.payPeriod}" class="form-control" maxlength="25" readonly="readonly">
+								</div>
+								<label class="col-sm-2 control-label">回调域名：</label>
+								<div class="col-sm-4">
+									<input id="callbackDomain" name="callbackDomain" th:value="${payConfigCompany.callbackDomain}" type="text" class="form-control" placeholder="不填,使用默认域名">
+								</div>
+							</div>
+							<div class="form-group" th:if = "${payConfigCompany.outChannel != 'acp'}">
+								<label class="col-sm-2 control-label">清算比例：</label>
+								<div class="col-sm-4">
+									<input id="clearRatio" name="clearRatio" th:value="${payConfigCompany.clearRatio}" class="form-control" maxlength="25" type="number" max="1" min="0">
+								</div>
+								
+							</div>
+							<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-3">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/appjs/pay/payConfigCompany/edit.js">
+	</script>
+</body>
+</html>

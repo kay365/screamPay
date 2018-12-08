@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link rel="stylesheet" href="/css/plugins/switch/bootstrap-switch.min.css"/>
+<style>
+.onoffswitch-inner:before {
+    content: "开启";
+    background-color: #1ab394;
+    color: #FFFFFF;
+    text-align: left;
+}
+
+.onoffswitch-inner:after {
+    content: "禁用";
+    background-color: #FFFFFF;
+    color: #999999;
+    text-align: right;
+}
+</style>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<!-- <div class="columns pull-left">
+							<button shiro:hasPermission="pay:agent:add" type="button" class="btn  btn-primary" onclick="add()">
+								<i class="fa fa-plus" aria-hidden="true"></i>添加代理
+							</button>
+						</div> -->
+						<div class="columns pull-right">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="agentNum" type="text" class="form-control"
+								placeholder="代理商户号">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="merchantsName" type="text" class="form-control"
+								placeholder="代理商名称">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select id="status" name="status" class="form-control">
+								<option value="">状态</option>
+								<option th:each="s:${status}" th:value="${s.key}" th:text="${s.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select id="auditStatus" name="auditStatus" class="form-control">
+								<option value="">审核状态</option>
+								<option th:each="as:${auditStatus}" th:value="${as.key}" th:text="${as.value}"></option>
+							</select>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+		<div>
+			<script type="text/javascript">
+				var s_edit_h = 'hidden';
+				var s_remove_h = 'hidden';
+				var s_resetPwd_h = 'hidden';
+				var s_batch_oerate = 'disabled';
+				var s_batch_audit = 'disabled';
+				var s_query_money = 'disabled';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:agent:edit">
+			<script type="text/javascript">
+				s_edit_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:agent:remove">
+			<script type="text/javascript">
+				var s_remove_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:agent:resetPwd">
+			<script type="text/javascript">
+				var s_resetPwd_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:agent:batchOperate">
+			<script type="text/javascript">
+				var s_batch_oerate = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:agent:batchAudit">
+			<script type="text/javascript">
+				var s_batch_audit = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="moneyacct:agent">
+			<script type="text/javascript">
+				var s_query_money = '';
+			</script>
+		</div>
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var auditStatus = [[${auditStatus}]];
+	    var auditStatusColor = [[${auditStatusColor}]];
+	    var merTypes = [[${merTypes}]];
+	    var statuss = [[${status}]];
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/plugins/switch/bootstrap-switch.min.js" ></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/agent/agent.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.PayPropertyDao">
+
+	<select id="get" resultType="com.qh.pay.domain.PayPropertyDO">
+		select `id`,`pay_company`,`merchantNo`,`config_type`,`config_key`,`value`,`name` from pay_property where id = #{value}
+	</select>
+
+	<select id="getByKey" resultType="com.qh.pay.domain.PayPropertyDO">
+		select `id`,`pay_company`,`merchantNo`,`config_type`,`config_key`,`value`,`name` from pay_property where config_key = #{value}
+	</select>
+	
+	<select id="exist" resultType="int">
+		select count(1) from pay_property where config_key = #{configKey}
+		<if test="merchantno !=null and merchantno !=''">
+			and merchantno = #{merchantno}
+		</if>
+	</select>
+	
+	<select id="list" resultType="com.qh.pay.domain.PayPropertyDO">
+		select `id`,`pay_company`,`merchantNo`,`config_type`,`config_key`,`value`,`name` from pay_property
+        <where>  
+		  <if test="payCompany != null and payCompany != ''"> and pay_company = #{payCompany} </if>
+		  <if test="merchantno != null and merchantno != ''"> and merchantNo = #{merchantno} </if>
+		  <if test="configType != null and configType != ''"> and config_type = #{configType} </if>
+		  <if test="configKey != null and configKey != ''"> and config_key = #{configKey} </if>
+		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from pay_property
+		 <where>  
+		  	<if test="payCompany != null and payCompany != ''"> and pay_company = #{payCompany} </if>
+		  	<if test="merchantno != null and merchantno != ''"> and merchantNo = #{merchantno} </if>
+		  	<if test="configType != null and configType != ''"> and config_type = #{configType} </if>
+		  	<if test="configKey != null and configKey != ''"> and config_key = #{configKey} </if>
+		 </where>
+	</select>
+	 
+	<insert id="save" parameterType="com.qh.pay.domain.PayPropertyDO" useGeneratedKeys="true" keyProperty="id">
+		insert into pay_property
+		(
+			`pay_company`, 
+			`merchantNo`, 
+			`config_type`, 
+			`config_key`, 
+			`value`, 
+			`name`
+		)
+		values
+		(
+			#{payCompany}, 
+			#{merchantno}, 
+			#{configType}, 
+			#{configKey}, 
+			#{value}, 
+			#{name}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.qh.pay.domain.PayPropertyDO">
+		update pay_property 
+		<set>
+			<if test="value != null">`value` = #{value}, </if>
+			<if test="name != null">`name` = #{name}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="removeByKey">
+		delete from pay_property where 
+		config_key = #{configKey}
+		<if test="merchantno !=null and merchantno !=''">
+			and merchantno = #{merchantno}
+		</if>
+	</delete>
+	
+	<delete id="batchRemoveByKey">
+		delete from pay_property where config_key in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+	
+	<delete id="remove">
+		delete from pay_property where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from pay_property where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -1,0 +1,225 @@
+#unionpayHeader{
+    height: 3rem;
+    background: #2789E0;
+    line-height: 3rem;
+    position: relative;
+}
+#unionpayHeader ul li{
+    text-align: center;
+    color: white;
+    font-size:0.8rem;
+}
+.leftImg{
+    position: absolute;
+    left: 0.5rem;
+    top: 0.75rem;
+}
+.rightImg{
+	position: absolute;
+    right: 0.5rem;
+    top: 0.75rem;
+}
+/* ǩԼ���п��б� */
+#cardList{
+	width: 90%;
+	margin: 0 auto;
+}
+#cardList div{
+    margin: 1rem auto;
+    height: 4rem;
+    border-radius: 0.5rem;
+    border: 1px solid #DBDBDB;
+    position: relative;
+}
+.cardListDiv ul li{
+	float:left;
+}
+.cardListDiv ul li span{
+    display: block;
+    margin-top: 0.7rem;
+    font-size: 0.9rem;
+    color: #656565;
+}
+.cardListDiv ul li span:last-child{
+    font-size: 0.7rem;
+    margin-top: 0.2rem;
+    color: #CACACA;
+}
+.cardListDiv ul li:first-child{
+	width:20%;
+}
+.cardListDiv ul li:first-child img{
+	margin:1rem 0.5rem 1rem 1rem;
+}
+.cardListDiv ul li:nth-child(2){
+	width:70%;
+    height: 4rem;
+}
+.cardListDiv ul li:last-child{
+	width:10%;
+}
+.cardListDiv ul li:last-child img{
+	margin:1.3rem 0.5rem 1rem 0;
+}
+.addCardList{
+	line-height:4rem;
+}
+.addCardList ul li{
+	float:left;
+}
+.addCardList ul li img{
+	width: 30px;
+    margin: 1rem 0.5rem 1rem 1rem;
+}
+/* ���¿� */
+#cardBing,#getYzmDiv{
+    width: 90%;
+   	margin: 0 auto;
+   	font-size:0.8rem;
+}
+#cardBing ul li ,#getYzmDiv ul li{
+	list-style:none;
+    height: 2.5rem;
+    line-height: 2.5rem;
+    border: 1px solid #DBDBDB;
+    border-radius: 0.4rem;
+    margin: 0.8rem 0;
+    text-indent: 0.5rem;
+    color: #666;
+}
+#cardBing ul li label{
+	float:right;
+	margin-right: 1rem;
+}
+#cardBing ul li select{
+	float: right;
+    border: none;
+    outline: none;
+    margin-right: 1rem;
+    height: 2.5rem;
+    width: 40%;
+}
+#cardBing ul li input{
+    width: 95%;
+    height: 2rem;
+    border: none;
+    outline: none;
+}
+#cardBing ul li.getYzmListBind input{
+	width:65%;
+}
+#cardBing ul li label.reGet{
+	float:right;
+	height:2rem;
+	line-height:2rem;
+	margin-top: 0.25rem;
+	color: #333;
+	border-left: 1px solid #ccc;
+}
+#cardBing ul li label.secondLabel{
+	color: red;
+}
+#cardBing ul li.sureInfoBtn{
+    border: none;
+    box-shadow: none;
+    background: #2889E1;
+    color: white;
+    text-align: center;
+    height: 2.5rem;
+    margin-top: 1rem;
+    line-height: 2.5rem;
+    text-indent: 0;
+    color: white;
+}
+/* ��ȡ������֤�� */
+#getYzmDiv ul li span{
+	width: 30%;
+	display:inline-block;
+}
+#getYzmDiv ul li input{
+	width: 65%;
+	height: 2.2rem;
+	border:none;
+	outline:none;
+	background:white
+}
+#getYzmDiv ul li label{
+	float:right;
+	margin-right:1rem;
+}
+#getYzmDiv ul li label.reGet{
+	height:2rem;
+	line-height:2rem;
+	margin-top: 0.25rem;
+	color:#333;
+	border-left: 1px solid #ccc;
+}
+#getYzmDiv ul li label.secondLabel{
+	color: red;
+}
+#getYzmDiv ul .surePayBtnList{
+	border:none;
+	color:white;
+	background:#2889E1;
+	text-align:center;
+	margin-top: 1rem;
+}
+#cardBing ul li.payPrice,#getYzmDiv ul li .payPrice{
+	color: #F90D0C;
+}
+#blackBg{
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	left : 0;
+	top : 0;
+	opacity : 0.2;
+	background: black;
+}
+#tipsDiv{
+	position: fixed;
+	width : 80%;
+	left: 10%;
+	top : 50%;
+	margin-top: -3rem;
+	height: 6rem;
+	border-radius: 0.3rem;
+	background: white;
+}
+#tipsDiv h1{
+	text-align: center;
+	height: 4rem;
+	line-height:4rem;
+	margin-top: 1rem;
+}
+
+/*支付成功！*/
+#successPay{
+	margin-top: 2rem;
+}
+#successPay ul li{
+	text-align: center;
+	height: 3rem;
+	line-height: 3rem;
+}
+#successPay ul li img{
+	width: 3rem;
+}
+#successPay ul li:nth-child(2) span{
+	color: #2988e1;
+	padding: 0 0.5rem;
+	font-size: 1rem;
+}
+#successPay ul li:last-child{
+	width: 90%;
+	height: 2.5rem;
+	line-height: 2.5rem;
+	margin: 0.5rem  auto 0;
+	background: #2988e1;
+	border-radius: 0.2rem;
+	font-family: "微软雅黑";
+}
+#successPay ul li:last-child a{
+	color: white;
+	display: block;
+}

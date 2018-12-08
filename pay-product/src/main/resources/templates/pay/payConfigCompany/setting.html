@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include::header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+							<div class="form-group">
+								<label class="col-sm-3 control-label">轮洵比例：</label>
+								<label class="col-sm-5 control-label"><input id="companySinglePollMoney" name="companySinglePollMoney" class="form-control"
+										type="number" th:value="${companySinglePollMoney}" required="required" max="100" min="0" style="width:200px;"></label>
+								<div class="" style="margin-left: 120px;color: red;">%/次,单次递增比例为三方限额的N%;为0则交替选择通道</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-3">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">支付设置：</label>
+								<label class="col-sm-3 control-label"> 
+									<input type="radio" name="company_close_pay" value="1" th:checked="${'1' eq companyClosePay}"/>开启
+								</label> 
+								<label class="col-sm-2 control-label"> 
+									<input type="radio" name="company_close_pay" value="0" th:checked="${'0' eq companyClosePay}"/>关闭
+								</label>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">下发设置：</label>
+								<label class="col-sm-3 control-label"> 
+									<input type="radio" name="company_close_acp" value="1" th:checked="${'1' eq companyCloseAcp}"/>开启
+								</label> 
+								<label class="col-sm-3 control-label"> 
+									<input type="radio" name="company_close_acp" value="0" th:checked="${'0' eq companyCloseAcp}"/>关闭
+								</label>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-3 control-label">提现设置：</label>
+								<label class="col-sm-3 control-label"> 
+									<input type="radio" name="company_close_withdraw" value="1" th:checked="${'1' eq companyCloseWithdraw}"/>开启
+								</label> 
+								<label class="col-sm-3 control-label"> 
+									<input type="radio" name="company_close_withdraw" value="0" th:checked="${'0' eq companyCloseWithdraw}"/>关闭
+								</label>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/appjs/pay/payConfigCompany/setting.js"></script>
+</body>
+
+</html>

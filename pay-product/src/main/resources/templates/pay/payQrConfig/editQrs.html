@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link href="/css/layui.css" rel="stylesheet">
+<link href="/css/plugins/fileinput/fileinput.min.css" rel="stylesheet">
+<style type="text/css">
+	#kvFileinputModal{
+		z-index: 99999999 !important;
+	}
+</style>
+<body>
+<div class="wrapper">
+	<div class="row">
+		<div class="col-sm-12">
+			<div class="ibox float-e-margins">
+				<input id="outChannel" name="outChannel" th:value="${payQrConfig.outChannel}"  type="hidden">
+				<input id="merchNo" name="merchNo" th:value="${payQrConfig.merchNo}"  type="hidden">
+				<table class="table table-bordered">
+					<caption>通道基本信息</caption>
+				    <tr>
+				      <td width="90">商户号：</td>
+				      <td><span th:text="${payQrConfig.merchNo}"></span></td>
+				      <td width="90">支付渠道：</td>
+				      <td><span th:each="outChannel:${outChannels}" th:if="${outChannel.key eq payQrConfig.outChannel}" th:text="${outChannel.value}"></span></td>
+				      <td width="90">手续费率：</td>
+				      <td><span th:text="${payQrConfig.jfRate}"></span></td>
+				      <td width="90">客服电话：</td>
+				      <td><span th:text="${payQrConfig.serviceTel}"></span></td>
+				    </tr>
+				    <tr>
+				      <td>收款账号：</td>
+				      <td><span th:text="${payQrConfig.accountNo}"></span></td>
+				      <td>收款名称：</td>
+				      <td><span th:text="${payQrConfig.accountName}"></span></td>
+				      <td>备注信息：</td>
+				      <td colspan="3"><span th:text="${payQrConfig.memo}"></span></td>
+				    </tr>
+				</table>
+				<form class="form-horizontal" id="signupForm">
+					<div id="divMoneyAmount" class="form-group">
+						<label class="col-sm-2 control-label">金额（￥）：</label>
+						<div class="col-sm-2">
+							<input type="number" id="moneyAmount"  class="form-control" max="100000" onkeypress="return noNumbers(event)" min="1">
+						</div>
+						<div class="col-sm-4">
+							<button type="button" class="layui-btn" id="moneyAmountFile" style="width: 145px;">
+		                           <i class="fa fa-cloud"></i>新增收款二维码
+		                     </button>
+		                     <a id="moneyAmountFileName" style="color: green;padding-left: 10px" href="#"></a>
+		                     <span style="padding-left: 5px;color: red">请上传jpg格式的图片,大小200K以内</span>
+						</div>
+						<div class="col-sm-2">
+							<button class="layui-btn" id="moneyAmountFileBatch">
+								<i class="fa fa-cloud"></i>批量新增收款二维码
+							</button>
+						</div>
+						<div class="col-sm-2">
+							<button class="layui-btn btn-danger" id="remove">
+								<i class="fa fa-cloud"></i>批量删除
+							</button>
+						</div>
+					</div>
+				</form>
+				</div>
+				<div id="divQrs" class="row col-sm-12">
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+	<div th:include="include::footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var qrs = [[${payQrConfig.qrs}]];
+		var merchNo = [[${payQrConfig.merchNo}]];
+		var outChannel = [[${payQrConfig.outChannel}]];
+		var username = [[${session.username}]];
+	/*]]>*/
+
+	</script>
+    <script type="text/javascript" src="/js/md5.min.js"></script>
+	<script type="text/javascript" src="/js/plugins/fileinput/fileinput.min.js"></script>
+	<script type="text/javascript" src="/js/layui.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/payQrConfig/editQrs.js"></script>
+	<script type="text/javascript" src="/js/plugins/fileinput/locales/zh.js"></script>
+</body>
+</html>

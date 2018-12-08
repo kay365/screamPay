@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<table class="table table-bordered">
+				    <tr>
+				      <td width="210" align="right">账户总入账(元)</td>
+				      <td><span th:text="${#numbers.formatDecimal(moneyacct.totalEntry,0,2)}"></span></td>
+				      <td width="210" align="right">账户总出账(元)</td>
+				      <td><span th:text="${#numbers.formatDecimal(moneyacct.totalOff,0,2)}"></span></td>
+				      <td width="210" align="right">账户总手续费(元)</td>
+				      <td><span th:text="${#numbers.formatDecimal(moneyacct.totalHandFee,0,2)}"></span></td>
+				      <td width="210" align="right">--</td>
+				      <td>--</td>
+				    </tr>
+				    <tr>
+				      <td align="right">账户总余额(元)</td>
+				      <td><span th:text="${#numbers.formatDecimal(moneyacct.balance,0,2)}"></span></td>
+				      <td align="right">账户可用余额(元)</td>
+				      <td><span th:text="${#numbers.formatDecimal(moneyacct.availBal,0,2)}"></span></td>
+				      <td align="right">账户不可用余额-待结算(元)</td>
+				      <td><span th:text="${#numbers.formatDecimal(moneyacct.forClear,0,2)}"></span></td>
+				      <td align="right">账户冻结金额-交易中(元)</td>
+				      <td><span th:text="${#numbers.formatDecimal(moneyacct.inTrading,0,2)}"></span></td>
+				    </tr>
+				</table>
+				<div class="ibox-body">
+					<table id="outChannelTable" data-mobile-responsive="true">
+					</table>
+				</div>
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left col-md-2 nopadding" th:remove="${merchNo}? all : none">
+							<input id="merchNo" type="text" class="form-control" placeholder="请输入商户号">
+						</div>
+						<div class="columns pull-left col-md-2 nopadding">
+							<input id="orderNo" type="text" class="form-control" placeholder="请输入订单号">
+						</div>
+						<div class="columns pull-left col-md-2 nopadding">
+							<select id="feeType" name="feeType" class="form-control">
+								<option value="">--流水类型--</option>
+								<option th:each="feeType:${feeTypes}" th:value="${feeType.key}" th:text="${feeType.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-left col-md-3 nopadding">
+							<input id="beginDate"  type="text"  class="form-control form_datetime" style="width:100px;float: left" placeholder="开始时间" title="开始时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+							<span style="vertical-align:top;padding: 8px;float: left">-</span>
+							<input id="endDate" type="text"  class="form-control form_datetime" style="width:100px; float: left" placeholder="结束时间" title="结束时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+						</div>
+						<div class="columns pull-left">
+							<button class="btn btn-success" onclick="reload()">查询</button>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var feeTypes = [[${feeTypes}]];
+	    var orderTypes = [[${orderTypes}]];
+	    var merchNo = [[${merchNo}]];
+	    var agentNo = [[${agentNo}]];
+	    var payMerch = [[${payMerch}]];
+	    var payCompany = [[${payCompany}]];
+	    var payCompanys = [[${payCompanys}]];
+	    var outChannels = [[${outChannels}]];
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript">
+		var prefix = "/moneyacct/payMerch";
+		$(function() {
+			$(".form_datetime").datetimepicker({
+				language : 'zh-CN',
+				format : 'yyyy-mm-dd',
+				weekStart : 1,
+				todayBtn : 1,
+				autoclose : 1,
+				todayHighlight : 1,
+				startView : 2,
+				minView : 2,
+				forceParse : 0
+			});
+			$(".form_datetime").val(formatDate(new Date()));
+			reload(load);
+			loadOutChannel();
+		});
+
+		function load() {
+			$('#exampleTable').bootstrapTable({
+				method : 'get', // 服务器数据的请求方式 get or post
+				url : prefix + "/detailList", // 服务器数据的加载地址
+				iconSize : 'outline',
+				toolbar : '#exampleToolbar',
+				striped : true, // 设置为true会有隔行变色效果
+				dataType : "json", // 服务器返回的数据类型
+				pagination : true, // 设置为true会在底部显示分页条
+				singleSelect : false, // 设置为true将禁止多选
+				pageSize : 10, // 如果设置了分页，每页数据条数
+				pageNumber : 1, // 如果设置了分布，首页页码
+				showColumns : false, // 是否显示内容下拉框（选择显示的列）
+				sidePagination : "server", // 设置在哪里进行分页，可选值为"client" 或者 "server"
+				showFooter:true,
+				queryParams : function(params) {
+					return {
+						limit : params.limit,
+						offset : params.offset,
+						merchNo : merchNo,
+						agentNo : agentNo,
+						orderNo : $('#orderNo').val(),
+						feeType : $('#feeType').val(),
+						beginDate : $('#beginDate').val(),
+						endDate : $('#endDate').val(),
+						payCompany:payCompany,
+        				payMerch:payMerch
+					};
+				},
+				columns : [ {
+					field : 'merchNo',
+					title : '平台商户号',
+                    footerFormatter:function(){
+                        return "总计";
+                    }
+				}, {
+					field : 'orderNo',
+					title : '订单号'
+				}, {
+					field : 'feeType',
+					title : '流水类型',
+					formatter : function(value, row, index) {
+						return feeTypes[value];
+					}
+				}, {
+					field : 'orderType',
+					title : '订单类型',
+					formatter : function(value, row, index) {
+						return orderTypes[value];
+					}
+				}, {
+					field : 'beforeAmt',
+					title : '变动前金额(元)'
+				}, {
+					field : 'tranAmt',
+					title : '变动金额',
+					formatter : function(value,row,index){
+						return (row.profitLoss == 0?"-":"+")+value;
+					},
+					footerFormatter:sumFooterFormatter
+				}, {
+					field : 'afterAmt',
+					title : '变动后金额'
+				}, {
+					field : 'crtDate',
+					title : '创建时间',
+					formatter : function(value, row, index) {
+						return intTime2Str(value);
+					}
+				} ]
+			});
+		}
+
+        var footerData;
+
+        function reload(cb) {
+            $.ajax({
+                type : "POST",
+                url : prefix + "/detailList/footer",
+                data:{
+                    merchNo : merchNo,
+                    agentNo : agentNo,
+                    orderNo : $('#orderNo').val(),
+                    feeType : $('#feeType').val(),
+                    beginDate : $('#beginDate').val(),
+                    endDate : $('#endDate').val()
+                },
+                success : function(r) {
+                    if (r.code == 0) {
+                        footerData = r.data;
+                        if(cb){
+                            cb();
+                        }else{
+                            $('#exampleTable').bootstrapTable('refresh');
+                        }
+                    } else {
+                        layer.msg(r.msg);
+                    }
+                }
+            })
+
+        }
+
+        function sumFooterFormatter(data){
+            var field = this.field;
+            if(footerData && footerData[field]){
+                var amount = footerData[field];
+                return ''+amount>0?'+'+amount:amount;
+            }
+            return '0';
+        }
+        
+        function loadOutChannel() {
+        	$('#outChannelTable').bootstrapTable({
+        		method : 'get', // 服务器数据的请求方式 get or post
+        		url : prefix + "/listForOutChannel", // 服务器数据的加载地址
+        		iconSize : 'outline',
+        		toolbar : '#outChannelToolbar',
+        		striped : true, // 设置为true会有隔行变色效果
+        		dataType : "json", // 服务器返回的数据类型
+        		pagination : true, // 设置为true会在底部显示分页条
+        		// //设置为limit则会发送符合RESTFull格式的参数
+        		singleSelect : false, // 设置为true将禁止多选
+        		// //发送到服务器的数据编码类型
+        		pageSize : 10, // 如果设置了分页，每页数据条数
+        		pageNumber : 1, // 如果设置了分布，首页页码
+        		showColumns : false, // 是否显示内容下拉框（选择显示的列）
+        		sidePagination : "server", // 设置在哪里进行分页，可选值为"client" 或者 "server"
+        		queryParams : function(params) {
+        			return {
+        				//说明：传入后台的参数包括offset开始索引，limit步长，sort排序列，order：desc或者,以及所有列的键值对
+        				limit: params.limit,
+        				offset:params.offset,
+        				payCompany:payCompany,
+        				payMerch:payMerch
+        			};
+        		},
+        		columns : [
+        				{
+        					field : 'payCompany',
+        					title : '支付公司',
+        					formatter:function(value, row, index) {
+                                return payCompanys[value];
+                            }
+        				},
+        				{
+        					field : 'payMerch',
+        					title : '支付商户号'
+        				},
+        				{
+        					field : 'outChannel',
+        					title : '支付方式',
+        					formatter:function(value, row, index) {
+                                return outChannels[value];
+                            }
+        				},
+        				{
+        					field : 'totalEntry',
+        					title : '账户总入账(元)',
+        					formatter:function(value, row, index) {
+                                return '+ ' + value;
+                            }
+        				},
+        				{
+        					field : 'totalOff',
+        					title : '账户总出账(元)',
+        					formatter:function(value, row, index) {
+                                return '- ' + value;
+                            }
+        				},
+        				{
+        					field : 'totalHandFee',
+        					title : '账户总手续费(元)',
+        					formatter:function(value, row, index) {
+                                return '- ' + value;
+                            }
+        				},
+        				{
+        					field : 'balance',
+        					title : '账户总余额(元)'
+        				},
+        				{
+        					field : 'availBal',
+        					title : '账户可用余额(元)'
+        				},
+        				{
+        					field : 'forClear',
+        					title : '账户不可用余额-待结算(元)',
+        					formatter:function(value, row, index) {
+                                return (row.balance - row.availBal);
+                            }
+        				},
+        				{
+        					field : 'inTrading',
+        					title : '账户冻结-交易中(元)',
+        					formatter:function(value, row, index) {
+                                return 0;
+                            }
+        				}]
+        	});
+        }
+	</script>
+</body>
+</html>

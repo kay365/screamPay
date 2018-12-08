@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.common.dao.UnionPayDao">
+    <select id="get" resultType="com.qh.common.domain.UnionPayDO">
+        select `bank_code`,`cityid`,`bank_branch`,`unionpay_no`
+        from cfg_unionpay
+        where unionpay_no = #{unionPayNo}
+    </select>
+
+    <select id="listByBankAndCity" resultType="com.qh.common.domain.UnionPayDO">
+        select `bank_code`,`cityid`,`bank_branch`,`unionpay_no`
+        from cfg_unionpay
+        where bank_code = #{bankCode} and cityid = #{cityId}
+    </select>
+
+    <select id="listByCity" resultType="com.qh.common.domain.UnionPayDO">
+        select `bank_code`,`cityid`,`bank_branch`,`unionpay_no`
+        from cfg_unionpay
+        where cityid = #{cityId}
+    </select>
+
+    <select id="listByBank" resultType="com.qh.common.domain.UnionPayDO">
+        select `bank_code`,`cityid`,`bank_branch`,`unionpay_no`
+        from cfg_unionpay
+        where bank_code = #{bankCode}
+    </select>
+</mapper>

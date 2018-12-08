@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<head th:include="include :: header"></head>
+<link href="/js/plugins/layui/css/layui.css" rel="stylesheet">
+<body class="gray-bg">
+
+
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>商户信息</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="merchantForm" class="wizard-big">
+                        <fieldset>
+                            <div class="row" >
+                            	<div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>开户渠道</label>
+                                        <select id="parentAgent" name="parentAgent" class="form-control" disabled="disabled">
+											<option th:each="agent:${agentNs}" th:value="${agent.key}" th:text="${agent.value}" th:if="${agent.key eq merchant.parentAgent}"></option>
+										</select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <input type="hidden" name="merchNo" id="userId" th:value="${merchant.merchNo}"/>
+                                </div>
+                                <div class="col-sm-12">
+                                	<legend>开户信息</legend>
+                                </div>
+                            	<div class="col-sm-6">
+                            		<div class="form-group">
+                                        <label>商户号 *</label>
+                                        <input id="merchNo" name="merchNo" class="form-control" type="text" disabled="disabled" th:value="${merchant.merchNo}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>管理员姓名 *</label>
+                                        <input id="managerName" name="managerName" class="form-control" type="text" disabled="disabled" th:value="${merchant.managerName}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>管理员电话(唯一) *</label>
+                                        <input id="managerPhone" name="managerPhone" class="form-control" type="text" disabled="disabled" th:value="${merchant.managerPhone}" >
+                                    </div>
+                                    <div class="form-group">
+                                        <label>启用时间 *</label>
+                                        <div>
+                                        	<input id="enableTime" type="text"  class="form-control" disabled="disabled" th:value="${#dates.format(merchant.enableTime,'yyyy-MM-dd')}" style="width:80%; float: left">
+                                    	</div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                	<div class="form-group">
+                                        <label>指派代付通道(未指派系统默认通道轮洵)</label>
+                                        <select id="payConfigCompany" name="payConfigCompany" class="form-control">
+											<option value="">请选择</option>
+											<option th:each="payConfigCompany:${payConfigCompany}" th:value="${payConfigCompany.payMerch}" th:attr="company=${payConfigCompany.company}" th:text="${payConfigCompany.callbackDomain+'('+payConfigCompany.payMerch+')'}" th:selected="${payConfigCompany.payMerch eq merchant.paidChannel.payMerch+''}"></option>
+										</select>
+										<input type="hidden" id="paidChannelStr" name="paidChannelStr" th:value="${paidChannelStr}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>通道分类 *</label>
+                                        <select id="payChannelType" name="payChannelType" class="form-control">
+											<option th:each="payChannelTypes:${payChannelTypes}" th:value="${payChannelTypes.key}" th:text="${payChannelTypes.value}" th:selected="${payChannelTypes.key eq merchant.payChannelType}"></option>
+										</select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>签约使用时间 *</label>
+                                        <div>
+											<input id="contractEffectiveTime" class="form-control" type="text" disabled="disabled" th:value="${merchant.contractEffectiveTime}">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-12" style="margin-top: 18px;">
+                                	<legend>联系人信息</legend>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>商户名称 *</label>
+                                        <input id="merchantsName" name="merchantsName" class="form-control required" type="text" required="required" th:value="${merchant.merchantsName}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>父级行业 *</label>
+                                        <select id="merchantsIndustryCode" name="merchantsIndustryCode" class="form-control required" required="required">
+											<option value="">--父级行业--</option>
+											<option th:each="IndustryP:${IndustryP}" th:value="${IndustryP.id}" th:text="${IndustryP.name}" th:selected="${IndustryP.id eq merchant.merchantsIndustryCode}"></option>
+										</select>
+										<input type="hidden" name="merchantsIndustry" id="merchantsIndustry" th:value="${merchant.merchantsIndustry}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>联系人 *</label>
+                                        <input id="contacts" name="contacts" class="form-control required" type="text" required="required" th:value="${merchant.contacts}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>联系人邮箱 *</label>
+                                        <input id="contactsEmail" name="contactsEmail" class="form-control" type="email" required="required" th:value="${merchant.contactsEmail}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>商户简称 *</label>
+                                        <input id="merchantsShortName" name="merchantsShortName" class="form-control required" type="text" required="required" th:value="${merchant.merchantsShortName}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>子级行业 *</label>
+                                        <select id="merchantsSubIndustryCode" name="merchantsSubIndustryCode" class="form-control required" required="required">
+											<option value="">--子级行业--</option>
+										</select>
+										<input type="hidden" name="merchantsSubIndustry" id="merchantsSubIndustry" th:value="${merchant.merchantsSubIndustry}"/>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>联系人电话 *</label>
+                                        <input id="contactsPhone" name="contactsPhone" class="form-control required" type="tel" required="required" maxlength="11" th:value="${merchant.contactsPhone}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>联系人QQ *</label>
+                                        <input id="contactsQq" name="contactsQq" class="form-control required" type="text" required="required" th:value="${merchant.contactsQq}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" align="right">
+                                	<button  type="submit" class="btn btn-success">保存</button>
+                                </div>
+							</div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+	<div th:include="include::footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		var merchantsSubIndustryCode = [[${merchant.merchantsSubIndustryCode}]]; 
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/plugins/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/jquery.selectBoxIt.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/md5.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/merchant/info.js">
+	</script>
+	<script type="text/javascript">
+	$(document).ready(function () {
+		loadFun();
+    });
+	
+	</script>
+</body>
+</html>

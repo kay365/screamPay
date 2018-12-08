@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<head th:include="include :: header"></head>
+<link href="/css/layui.css" rel="stylesheet">
+<body>
+	<div class="row col-sm-12 wrapper" th:object="${agent}">
+		<table class="table table-hover table-striped">
+			<tr style="background-color: #C1CDCD"><td colspan="4" align="center">开户信息</td></tr>
+			<tr> 
+				<td>代理商号</td><td><span th:text="*{agentNumber}"></span></td>
+			</tr>
+			<tr>
+				<td>代理商类型</td><td>
+				<span th:each="bc:${agentTypes}" th:if="${bc.key eq agent.agentType}" th:text="${bc.value}"></span>
+				</td>
+				<td>管理员姓名</td><td><span th:text="*{managerName}"></span></td>
+			</tr>
+			<tr>
+				<td>管理员手机号</td><td><span th:text="*{managerPhone}"></span></td>
+				<td>签约使用时段</td><td><span th:text="*{contractEffectiveTime}"></span></td>
+			</tr>
+			<tr>
+				<td>启用时间</td><td><span th:text="*{#dates.format(enableTime,'yyyy-MM-dd')}"></span></td>
+				<td>开户渠道</td><td><span th:text="*{parentAgent}"></span></td>
+			</tr>
+		</table>
+		<table class="table table-hover table-striped">
+			<tr style="background-color: #C1CDCD"><td colspan="4" align="center">代理商联系人信息</td></tr>
+			<tr> 
+				<td>商户名称</td><td><span th:text="*{merchantsName}"></span></td>
+				<td>商户简称</td><td><span th:text="*{merchantsShortName}"></span></td>
+			</tr>
+			<tr>
+				<td>商户行业</td><td><span th:text="*{merchantsIndustry}"></span>-<span th:text="*{merchantsSubIndustry}"></span></td>
+				<td>联系人</td><td><span th:text="*{contacts}"></span></td>
+			</tr>
+			<tr>
+				<td>联系电话</td><td><span th:text="*{contactsPhone}"></span></td>
+				<td>联系邮箱</td><td><span th:text="*{contactsEmail}"></span></td>
+			</tr>
+			<tr>
+				<td>联系QQ</td><td><span th:text="*{contactsQq}"></span></td>
+				<td></td><td></td>
+			</tr>
+		</table>
+		<table class="table table-hover table-striped">
+			<tr style="background-color: #C1CDCD"><td colspan="4" align="center">实名信息</td></tr>
+			<tr> 
+				<td>所在城市</td><td><span th:text="*{province}"></span>-<span th:text="*{city}"></td>
+				<td>实名</td><td><span th:text="*{legalerName}"></span></td>
+			</tr>
+			<tr>
+				<td>证件类型</td><td>
+				<span th:each="bc:${certTypes}" th:if="${bc.key eq agent.legalerCardType}" th:text="${bc.value}"></span>
+				</td>
+				<td>证件号码</td><td><span th:text="*{legalerCardNumber}"></span></td>
+			</tr>
+			<tr>
+				<td>证件有效期</td><td><span th:text="*{legalerCardEffectiveTime}"></span></td>
+				<td>证件影印件</td><td>
+				<img style="height: 20%;" th:src="*{legalerCardPicFront}">
+				<img style="height: 20%;" th:src="*{legalerCardPicBack}">
+			</tr>
+			
+		</table>
+		<table class="table table-hover table-striped">
+			<tr style="background-color: #C1CDCD"><td colspan="4" align="center">结算账户</td></tr>
+			<tr> 
+				<td>账户性质</td><td>
+				<span th:each="bc:${acctTypes}" th:if="${bc.key eq agent.accountType}" th:text="${bc.value}"></span>
+				</td>
+				<td>开户城市</td><td><span th:text="*{accountProvince}"></span>-<span th:text="*{accountCity}"></span></td>
+			</tr>
+			<tr>
+				<td>开户银行</td><td><span th:text="*{accountBank}"></span></td>
+				<td>开户行</td><td><span th:text="*{accountBankBranch}"></span></td>
+			</tr>
+			<tr>
+				<td>开户人</td><td><span th:text="*{accountOpenPerson}"></span></td>
+				<td>结算账户</td><td><span th:text="*{accountOpenNumber}"></span></td>
+			</tr>
+			<tr>
+				<td>卡/证影印件</td><td><img style="height: 20%;" th:src="*{accountPic}"></td>
+				<td></td><td></td>
+			</tr>
+			
+		</table>
+		
+	</div>
+	<div th:include="include::footer"></div>
+	<div th:remove="${merchNo}? all : none">
+		<script th:inline="javascript">
+			merchNos = [[${agentNs}]];
+	//console.log(merchNos);
+		</script>
+	</div>
+	<script type="text/javascript" src="/js/layui.js"></script>
+	<script type="text/javascript"
+		src="/js/bootstrap-datetimepicker.min.js"></script>
+	<!-- 日期框 -->
+	<script type="text/javascript"
+		src="/js/bootstrap-datetimepicker.zh-CN.js"></script>
+	<!-- 日期框 -->
+	<script type="text/javascript" src="/js/jquery.selectBoxIt.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	</script>
+	<script type="text/javascript">
+	$(".form_datetime").datetimepicker({
+		language : 'zh-CN',
+		format: 'yyyy-mm-dd',
+		weekStart: 1,
+		todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 2,
+		minView: 2,
+		forceParse: 0
+	});
+	
+	</script>
+</body>
+</html>

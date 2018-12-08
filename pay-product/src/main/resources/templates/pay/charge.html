@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link href="/css/layui.css" rel="stylesheet">
+<style type="text/css">
+#outChannelDiv div p{
+	width: 80%;
+}
+#outChannelDiv div p input{
+	vertical-align:middle;
+}
+</style>
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <form id="mainForm" class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">账户余额：</label>
+                        <label th:text="${payAcctBal.availBal}" style="position:relative;top:10px;color:red;"></label>
+                    </div>
+
+                    <div id="outChannelDiv" class="form-group">
+                        <label class="col-sm-2 control-label">支付方式：</label>
+                        <div class="row col-sm-2"
+                             th:each="entry:${outChannelDesc}">
+                            <p class="activeP">
+                            	<input class="control-label" th:tittle="${entry.value}" type="radio"  name="outChannel" th:value="${entry.key}" />
+                            	<img th:src="${'/img/payImg/logo-'+entry.key+'.png'}" alt="image" style="height:40px;width: 114px;" />
+                            </p>
+                        </div>
+                    </div>
+                    <div th:id="${'divAmount_' + outChannelEntry.key}"  class="form-group amount" th:each="outChannelEntry:${monSet}">
+                        <label class="col-sm-2 control-label">充值金额：</label>
+                        <div  class="row col-sm-10">
+                            <input class="col-sm-1 layui-btn layui-btn-primary amount-input " type="button" style="border-radius:5px;"
+                                    th:each="entry:${outChannelEntry.value}" th:title="${entry}+'¥'" th:value="${entry}" >
+                        </div>
+                    </div>
+                    <div  class="form-group" >
+                        <label class="col-sm-2 control-label"></label>
+                        <button type="button" class="btn  btn-primary" onclick="getQr()">
+                            	立即充值
+                        </button>
+                    </div>
+                    <div  class="form-group qrcode hidden" >
+                        <label class="col-sm-1 control-label">金额：</label>
+                        <label id="amount" class="col-sm-1 control-label"></label>
+
+                        <label class="col-sm-1 control-label">剩余支付时间：</label>
+                        <label id="remainSec" class="col-sm-1 control-label"></label>
+
+                        <label class="col-sm-1 control-label">付款二维码：</label>
+                        <label class="col-sm-2 control-label"><img id="qrCode" src="#" style="width:300px;height:300px"/></label>
+                    </div>
+                    <div  class="form-group hidden" >
+                        <input id="merchNo" type="input" th:value="${merchNo}" />
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="include :: footer"></div>
+</body>
+<script type="text/javascript" src="/js/layui.js"></script>
+<script type="text/javascript">
+    var curAmount = 0;
+    var curOutChannel = 'jfwx';
+    var timer = null;
+    $(function () {
+        $(':radio').each(function () {
+            $this = $(this);
+            console.log($this.val() +  "   11");
+            var outChannel = $this.val();
+            $this.on('click',function(){
+                hideAllAmount();
+                $('#divAmount_'+outChannel).show();
+                curOutChannel = outChannel;
+                console.log(curOutChannel +  "   22")
+            });
+        });
+
+        $('.amount input').on('click',function(){
+            curAmount = $(this).val();
+            $(this).css({
+            	"border":"1px solid #1ab394",
+            	"background-color": "#1ab394",
+            	"color": "white"
+            }).siblings().css({
+            	"border":"1px solid #C9C9C9",
+            	"background-color": "#fff",
+            	"color": "#333"
+            });
+            console.log(curAmount);
+            //变换样式
+        })
+
+
+        $('#outChannelDiv input:first').trigger('click');
+
+
+    });
+
+    function getQr(){
+    	clearInterval(timer);
+    	 $('#remainSec').html();
+        var merchNo = $('#merchNo').val();
+        $.ajax({
+            url: "/pay/qr/getChargeMon",
+            type: "post",
+            data: {
+                'monAmount': curAmount,
+                'outChannel': curOutChannel,
+                'merchNo': merchNo
+            },
+            success: function (r) {
+                if (r.code == 0) {
+                    $('.qrcode').removeClass('hidden');
+                    $('#qrCode').attr('src', r.data.qr_url);
+                    $('#amount').html(r.data.amount);
+                   
+                    var timerNumber = r.data.remainSec;
+                    timer = setInterval(function(){
+                    	timerNumber -= 1;
+                    	if(timerNumber <= 0){
+                    		$('.qrcode').addClass('hidden');
+                    		clearInterval(timer);
+                    	}
+                    	$('#remainSec').html("00:0"+parseInt(timerNumber/60) +":"+timerNumber%60).css("color","red");
+                    },1000);
+                    
+                } else {
+                    $('.qrcode').addClass('hidden');
+                    layer.msg(r.msg);
+                }
+            }
+        });
+    }
+
+    function hideAllAmount(){
+        $('.amount').each(function(){
+            $(this).hide();
+        })
+    }
+
+</script>
+</html>

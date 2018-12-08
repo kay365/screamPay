@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+    <div class="col-sm-12">
+        <div class="ibox">
+            <div class="ibox-body">
+                <div class="fixed-table-toolbar">
+                    <div class="columns pull-left">
+                        <button shiro:hasPermission="pay:payConfigCompany:payChannelType:add" type="button" class="btn  btn-primary" onclick="add()">
+                            <i class="fa fa-plus" aria-hidden="true"></i>添加
+                        </button>
+                    </div>
+                    <div class="columns pull-right">
+                        <button class="btn btn-success" onclick="reLoad()">查询</button>
+                    </div>
+                    <!--<div class="columns pull-right col-md-2 nopadding">-->
+                        <!--<input id="channelName" type="text" class="form-control"-->
+                               <!--placeholder="通道名称">-->
+                    <!--</div>-->
+                </div>
+                <table id="exampleTable" data-mobile-responsive="true">
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:include="include :: footer"></div>
+<script type="text/javascript" src="/js/appjs/pay/payConfigCompany/payChannelType.js"></script>
+</body>
+</html>

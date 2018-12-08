@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.PayConfigCompanyDao">
+
+	<select id="get" resultType="com.qh.pay.domain.PayConfigCompanyDO">
+		select `company`,`pay_merch`,`out_channel`,`cost_rate`,cost_rate_unit,`qh_rate`,qh_rate_unit,`max_pay_amt`,`min_pay_amt`,`crt_time`,`pay_period`,`if_close`,`pay_channel_type`,`callback_domain`,`capital_pool`,`payment_method`,max_fee,min_fee,clear_ratio from pay_config_company
+		 where company = #{company} and pay_merch = #{payMerch} and out_channel = #{outChannel}
+	</select>
+
+	<select id="list" resultType="com.qh.pay.domain.PayConfigCompanyDO">
+		select `company`,`pay_merch`,`out_channel`,`cost_rate`,cost_rate_unit,`qh_rate`,qh_rate_unit,`max_pay_amt`,`min_pay_amt`,`crt_time`,`pay_period`,`if_close`,`pay_channel_type`,`callback_domain`,`capital_pool`,`payment_method`,max_fee,min_fee,clear_ratio from pay_config_company
+        <where>  
+  		  <if test="company != null and company != ''"> and company = #{company} </if>
+  		  <if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+  		  <if test="payChannelType != null and payChannelType != ''"> and pay_channel_type = #{payChannelType} </if>
+  		  <if test="paymentMethod != null and paymentMethod != ''"> and payment_method = #{paymentMethod} </if>
+	  	  <choose>
+ 		  	<when test="outChannel != 'acp'"> 
+ 		  		<if test="outChannel != null and outChannel != ''"> 
+ 		  			and out_channel = #{outChannel} 
+ 		  		</if>
+ 		  		and out_channel != 'acp'
+ 		  	</when>
+ 		  	<otherwise>
+ 		  		and out_channel = 'acp'
+ 		  	</otherwise>
+  		  </choose>
+  		  <if test="ifClose != null and ifClose != ''"> and if_close = #{ifClose} </if>
+		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by crt_time desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from pay_config_company
+		 <where>  
+	  		<if test="company != null and company != ''"> and company = #{company} </if>
+  		 	<if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+  		  	<if test="payChannelType != null and payChannelType != ''"> and pay_channel_type = #{payChannelType} </if>
+  		  	<if test="paymentMethod != null and paymentMethod != ''"> and payment_method = #{paymentMethod} </if>
+	  	    <choose>
+	 		  	<when test="outChannel != 'acp'"> 
+	 		  		<if test="outChannel != null and outChannel != ''"> 
+	 		  			and out_channel = #{outChannel} 
+	 		  		</if>
+	 		  		and out_channel != 'acp'
+	 		  	</when>
+	 		  	<otherwise>
+	 		  		and out_channel = 'acp'
+	 		  	</otherwise>
+  		    </choose>
+  		  	<if test="ifClose != null and ifClose != ''"> and if_close = #{ifClose} </if>
+		 </where>
+	</select>
+	 
+	<insert id="save" parameterType="com.qh.pay.domain.PayConfigCompanyDO">
+		insert into pay_config_company
+		(
+			`company`, 
+			`pay_merch`, 
+			`out_channel`, 
+			`cost_rate`, 
+			cost_rate_unit,
+			`qh_rate`, 
+			qh_rate_unit,
+			`max_pay_amt`, 
+			`min_pay_amt`, 
+			`pay_period`, 
+			`if_close`,
+			pay_channel_type,
+			`callback_domain`,
+			capital_pool,
+			payment_method,
+			min_fee,
+			max_fee
+			<if test="clearRatio != null">
+			,clear_ratio
+			</if>
+		)
+		values
+		(
+			#{company}, 
+			#{payMerch}, 
+			#{outChannel}, 
+			#{costRate}, 
+			#{costRateUnit}, 
+			#{qhRate}, 
+			#{qhRateUnit}, 
+			#{maxPayAmt}, 
+			#{minPayAmt}, 
+			#{payPeriod}, 
+			#{ifClose},
+			#{payChannelType},
+			#{callbackDomain},
+			#{capitalPool},
+			#{paymentMethod},
+			#{minFee},
+			#{maxFee}
+			<if test="clearRatio != null">
+			,
+			${clearRatio}
+			</if>
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.qh.pay.domain.PayConfigCompanyDO">
+		update pay_config_company 
+		<set>
+			<if test="costRate != null">`cost_rate` = #{costRate}, </if>
+			<if test="costRateUnit != null">`cost_rate_unit` = #{costRateUnit}, </if>
+			<if test="qhRate != null">`qh_rate` = #{qhRate}, </if>
+			<if test="qhRateUnit != null">`qh_rate_unit` = #{qhRateUnit}, </if>
+			<if test="maxPayAmt != null">`max_pay_amt` = #{maxPayAmt}, </if>
+			<if test="minPayAmt != null">`min_pay_amt` = #{minPayAmt}, </if>
+			<if test="payPeriod != null">`pay_period` = #{payPeriod}, </if>
+			<if test="ifClose != null">`if_close` = #{ifClose},</if>
+			<if test="payChannelType != null">`pay_channel_type` = #{payChannelType},</if>
+			<if test="callbackDomain != null">`callback_domain` = #{callbackDomain},</if>
+			<if test="capitalPool != null">`capital_pool` = #{capitalPool},</if>
+			<if test="paymentMethod != null">`payment_method` = #{paymentMethod},</if>
+			<if test="minFee != null">`min_fee` = #{minFee},</if>
+			<if test="maxFee != null">`max_fee` = #{maxFee},</if>
+			<if test="clearRatio != null">`clear_ratio` = #{clearRatio},</if>
+		</set>
+		where company = #{company} and pay_merch = #{payMerch} and out_channel = #{outChannel}
+	</update>
+	
+	<delete id="remove">
+		delete from pay_config_company where company = #{company} and pay_merch = #{payMerch} and out_channel = #{outChannel}
+	</delete>
+	
+</mapper>

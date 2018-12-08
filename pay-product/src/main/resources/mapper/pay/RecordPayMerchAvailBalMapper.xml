@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.RecordPayMerchAvailBalDao">
+
+	<select id="get" resultType="com.qh.pay.domain.RecordPayMerchBalDO">
+		select `order_no`,`merch_no`,`fee_type`,`order_type`,`pay_merch`,`pay_company`,`out_channel`,`before_amt`,`tran_amt`,`after_amt`,`profit_loss`,`crt_date` from record_pay_merch_avail_bal 
+		where order_no = #{orderNo} and merch_no = #{merchNo} and fee_type = #{feeType}
+	</select>
+
+	<select id="list" resultType="com.qh.pay.domain.RecordPayMerchBalDO">
+		select `order_no`,`merch_no`,`fee_type`,`order_type`,`pay_merch`,`pay_company`,`out_channel`,`before_amt`,`tran_amt`,`after_amt`,`profit_loss`,`crt_date` from record_pay_merch_avail_bal
+        <where>  
+		  		  <if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+		  		  <if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+		  		  <if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+		  		  <if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+		  		  <if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+		  		  <if test="payCompany != null and payCompany != ''"> and pay_company = #{payCompany} </if>
+		  		  <if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+		  		  <if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+		  		  <if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+				  <if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by order_no desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from record_pay_merch_avail_bal
+		 <where>  
+		  		  <if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+		  		  <if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+		  		  <if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+		  		  <if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+		  		  <if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+		  		  <if test="payCompany != null and payCompany != ''"> and pay_company = #{payCompany} </if>
+		  		  <if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+		  		  <if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+		  		  <if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+				  <if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.qh.pay.domain.RecordPayMerchBalDO">
+		insert into record_pay_merch_avail_bal
+		(
+			`order_no`, 
+			`merch_no`, 
+			`fee_type`, 
+			`order_type`, 
+			`pay_merch`, 
+			`pay_company`, 
+			`out_channel`, 
+			`before_amt`, 
+			`tran_amt`, 
+			`after_amt`, 
+			`profit_loss`, 
+			`crt_date`
+		)
+		values
+		(
+			#{orderNo}, 
+			#{merchNo}, 
+			#{feeType}, 
+			#{orderType}, 
+			#{payMerch}, 
+			#{payCompany}, 
+			#{outChannel}, 
+			#{beforeAmt}, 
+			#{tranAmt}, 
+			#{afterAmt}, 
+			#{profitLoss}, 
+			#{crtDate}
+		)
+	</insert>
+	 <insert id="saveBatch" parameterType="java.util.List">
+		insert into record_pay_merch_avail_bal	(
+			`order_no`, 
+			`merch_no`, 
+			`fee_type`, 
+			`order_type`, 
+			`pay_merch`, 
+			`pay_company`, 
+			`out_channel`, 
+			`before_amt`, 
+			`tran_amt`, 
+			`after_amt`, 
+			`profit_loss`, 
+			`crt_date`	
+			)
+		values
+		<foreach collection="list" item="item" index="index" separator=",">
+			(
+			#{item.orderNo}, 
+			#{item.merchNo}, 
+			#{item.feeType}, 
+			#{item.orderType}, 
+			#{item.payMerch}, 
+			#{item.payCompany}, 
+			#{item.outChannel}, 
+			#{item.beforeAmt}, 
+			#{item.tranAmt}, 
+			#{item.afterAmt}, 
+			#{item.profitLoss}, 
+			#{item.crtDate}
+			)
+        </foreach>
+	</insert>
+	<update id="update" parameterType="com.qh.pay.domain.RecordPayMerchBalDO">
+		update record_pay_merch_avail_bal 
+		<set>
+			<if test="beforeAmt != null">`before_amt` = #{beforeAmt}, </if>
+			<if test="tranAmt != null">`tran_amt` = #{tranAmt}, </if>
+			<if test="afterAmt != null">`after_amt` = #{afterAmt}, </if>
+			<if test="profitLoss != null">`profit_loss` = #{profitLoss}, </if>
+		</set>
+		where order_no = #{orderNo} and merch_no = #{merchNo} and fee_type = #{feeType}
+	</update>
+	
+	<delete id="remove">
+		delete from record_pay_merch_avail_bal where order_no = #{orderNo} and merch_no = #{merchNo} and fee_type = #{feeType}
+	</delete>
+
+</mapper>

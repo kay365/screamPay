@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+<title>qhpay</title>
+<meta name="keywords" content="jfpay支付系统">
+<meta name="description" content="jfpay支付系统">
+<!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+<script>
+	if (window.top !== window.self) {
+		window.top.location = window.location;
+	}
+</script>
+
+</head>
+
+<body>
+	<div></div>
+	<!-- 全局js -->
+	<script src="/js/jquery.min.js?v=2.1.4"></script>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var jumpData = [[${jumpData}]];
+	/*]]>*/
+	</script>
+	<script type="text/javascript">
+		$().ready(function() {
+			console.log("jumpData.params:" + jumpData.params);
+			if(jumpData.form_url){
+				var form = $("<form></form>");
+		        form.attr('action', jumpData.action);
+		        form.attr('method','post');
+		        if(jumpData.params){
+		        	var params = jumpData.params;
+		        	for(var p in params){
+		        		form.append("<input type='hidden' name='"+p+"' value='"+params[p]+"' />");
+		        	}
+		        }
+		        form.appendTo("body");
+		        form.css('display','none');
+		        form.submit();
+				console.log("action:" + jumpData.action);
+				console.log("params:" + jumpData.params);
+			}
+		});
+	</script>
+</body>
+</html>

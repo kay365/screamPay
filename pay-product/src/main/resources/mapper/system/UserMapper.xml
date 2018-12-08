@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.system.dao.UserDao">
+
+	<select id="get" resultType="com.qh.system.domain.UserDO">
+		select
+		`user_id`,`username`,`name`,`password`,`fund_password`,`dept_id`,`email`,`mobile`,`status`,`user_id_create`,`gmt_create`,`gmt_modified`
+		,`user_type` from sys_user where user_id = #{value}
+	</select>
+
+	<select id="getByUserName" resultType="com.qh.system.domain.UserDO">
+		select
+		`user_id`,`username`,`name`,`password`,`fund_password`,`dept_id`,`email`,`mobile`,`status`,`user_id_create`,`gmt_create`,`gmt_modified`
+		,`user_type` from sys_user where username = #{value}
+	</select>
+
+	<select id="list" resultType="com.qh.system.domain.UserDO">
+		select
+		`user_id`,`username`,`name`,`user_type`,`dept_id`,`email`,`mobile`,`status`,`user_id_create`,`gmt_create`,`gmt_modified`
+		from sys_user
+		<where>
+			<if test="username != null and username != ''"> and username = #{username} </if>
+			<if test="name != null and name != ''"> and name = #{name} </if>
+			<if test="deptId != null and deptId != ''"> and dept_id = #{deptId} </if>
+			<if test="email != null and email != ''"> and email = #{email} </if>
+			<if test="mobile != null and mobile != ''"> and mobile = #{mobile} </if>
+			<if test="status != null and status != ''"> and status = #{status} </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by user_id desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+
+	<select id="listByUserType" resultType="com.qh.system.domain.UserDO">
+		select
+		`user_id`,`username`,`name`,`user_type`,`dept_id`,`email`,`mobile`,`status`,`user_id_create`,`gmt_create`,`gmt_modified`
+		from sys_user
+		<where>
+			user_type = #{userType}
+		</where>
+	</select>
+
+	<select id="count" resultType="int">
+		select count(1) from sys_user
+		<where>
+			<if test="username != null and username != ''"> and username = #{username} </if>
+			<if test="name != null and name != ''"> and name = #{name} </if>
+			<if test="deptId != null and deptId != ''"> and dept_id = #{deptId} </if>
+			<if test="email != null and email != ''"> and email = #{email} </if>
+			<if test="mobile != null and mobile != ''"> and mobile = #{mobile} </if>
+			<if test="status != null and status != ''"> and status = #{status} </if>
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.qh.system.domain.UserDO"
+		useGeneratedKeys="true" keyProperty="userId">
+		insert into sys_user
+		(
+		`username`,
+		`name`,
+		`password`,
+		`fund_password`,
+		`dept_id`,
+		`email`,
+		`mobile`,
+		`user_type`,
+		`status`,
+		`user_id_create`,
+		`gmt_create`,
+		`gmt_modified`
+		)
+		values
+		(
+		#{username},
+		#{name},
+		#{password},
+		#{fundPassword},
+		#{deptId},
+		#{email},
+		#{mobile},
+		#{userType},
+		#{status},
+		#{userIdCreate},
+		#{gmtCreate},
+		#{gmtModified}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.qh.system.domain.UserDO">
+		update sys_user
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="deptId != null">`dept_id` = #{deptId}, </if>
+			<if test="email != null">`email` = #{email}, </if>
+			<if test="mobile != null">`mobile` = #{mobile}, </if>
+			<if test="status != null">`status` = #{status}, </if>
+			<if test="gmtModified != null">`gmt_modified` = #{gmtModified}</if>
+		</set>
+		where user_id = #{userId}
+	</update>
+
+	<update id="updatePassword" parameterType="com.qh.system.domain.UserDO">
+		update sys_user
+		<set>
+			<if test="password != null">`password` = #{password}, </if>
+		</set>
+		where user_id = #{userId}
+	</update>
+
+	<update id="updateFundPassword" parameterType="com.qh.system.domain.UserDO">
+		update sys_user
+		<set>
+			<if test="fundPassword != null">`fund_password` = #{fundPassword}, </if>
+		</set>
+		where user_id = #{userId}
+	</update>
+
+	<delete id="remove">
+		delete from sys_user where user_id = #{value}
+	</delete>
+
+	<delete id="removeByUsername">
+		delete from sys_user where username = #{value}
+	</delete>
+	<delete id="batchRemoveByUsername">
+		delete from sys_user where username in
+		<foreach item="username" collection="array" open="(" separator=","
+			close=")">
+			#{username}
+		</foreach>
+	</delete>
+	<delete id="batchRemove">
+		delete from sys_user where user_id in
+		<foreach item="userId" collection="array" open="(" separator=","
+			close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<select id="listAllDept" resultType="Integer">
+		select DISTINCT dept_id from sys_user
+	</select>
+
+</mapper>

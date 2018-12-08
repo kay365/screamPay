@@ -1,0 +1,83 @@
+qhpay:
+  publicKey: MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCMlNqJh3JG6shlMJ0OJ42QnuG9OVUiBlcpbUXbaaprUjF1XTqDaUJZLvk5fkRDAgZAC/CbyYOOoZBpp8y3CnnCSPtJ8oKoLuQOcN1hW4snE0VP+J2wKMQQyjmzFK4MiRRDE6oxD2nWFe517zl8IOJYZWK3egTIXezoidLG0bucZwIDAQAB
+  privateKeyPath: D:/var/key/privateKey.txt
+  uploadPath: D:/var/uploaded_files/
+logging:
+  level:
+    root: error
+spring:
+  read-dataSource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/pay_crypto?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+    username: pay_crypto
+    password: pay_crypto
+  dataSource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/pay_crypto?useUnicode=true&characterEncoding=utf8&useSSL=false&allowMultiQueries=true
+    username: pay_crypto
+    password: pay_crypto
+    initialSize: 1
+    minIdle: 3
+    maxActive: 20
+    # 配置获取连接等待超时的时间
+    maxWait: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+    timeBetweenEvictionRunsMillis: 60000
+    # 配置一个连接在池中最小生存的时间，单位是毫秒
+    minEvictableIdleTimeMillis: 30000
+    validationQuery: select 'x'
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    # 打开PSCache，并且指定每个连接上PSCache的大小
+    poolPreparedStatements: true
+    maxPoolPreparedStatementPerConnectionSize: 20
+    # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
+    filters: stat,slf4j
+    # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
+    # 合并多个DruidDataSource的监控数据
+    #useGlobalDataSourceStat: true
+  jpa:
+    hibernate:
+      #ddl-auto: create #ddl-auto:设为create表示每次都重新建表
+      ddl-auto: update #ddl-auto:设为update表示每次都不会重新建表
+    show-sql: true
+  # REDIS (RedisProperties)
+  redis: 
+    # Redis服务器地址
+    host: 127.0.0.1
+    # Redis服务器连接端口
+    port: 6379  
+    # Redis服务器连接密码（默认为空）
+    password: redis  
+    # 连接池最大连接数（使用负值表示没有限制）
+    pool: 
+      max-active: 8  
+        # 连接池最大阻塞等待时间（使用负值表示没有限制）
+      max-wait: -1  
+      # 连接池中的最大空闲连接
+      max-idle: 8  
+      # 连接池中的最小空闲连接
+      min-idle: 0  
+      # 连接超时时间（毫秒）
+    timeout: 0
+    #sentinel: 
+      #master: mymaster  
+    # comma-separated list of host:port pairs  哨兵的配置列表  
+      #nodes: 192.168.1.188:26379,192.168.1.188:26479,192.168.1.188:26579
+  task: 
+    pool: 
+      corePoolSize: 10  
+      maxPoolSize: 20  
+      keepAliveSeconds: 60  
+      queueCapacity: 100  
+      threadNamePrefix: myThreadPool 
+redisson:
+  password: 
+  # 单机模式
+  address: redis://127.0.0.1:6379
+  # 哨兵模式
+  #master-name: mymaster
+  #sentinel-addresses: redis://192.168.1.188:26379,redis://192.168.1.188:26479,redis://192.168.1.188:26579

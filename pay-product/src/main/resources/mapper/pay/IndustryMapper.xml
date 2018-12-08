@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.IndustryDao">
+
+	<select id="get" resultType="com.qh.pay.domain.IndustryDO">
+		select `id`,`name`,`parentid`,`describe` from industry where id = #{value}
+	</select>
+
+	<select id="list" resultType="com.qh.pay.domain.IndustryDO">
+		select `id`,`name`,`parentid`,`describe` from industry
+        <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="parentid != null and parentid != ''"> and parentid = #{parentid} </if>
+		  		  <if test="describe != null and describe != ''"> and describe = #{describe} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="listParent" resultType="com.qh.pay.domain.IndustryDO">
+		select `id`,`name`,`parentid`,`describe` from industry
+        <where>  
+        parentid = 0
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="parentid != null and parentid != ''"> and parentid = #{parentid} </if>
+		  		  <if test="describe != null and describe != ''"> and describe = #{describe} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="listSub" resultType="com.qh.pay.domain.IndustryDO">
+		select `id`,`name`,`parentid`,`describe` from industry
+        <where>  
+        
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="parentid != null and parentid != ''"> and parentid = #{parentid} </if>
+		  		  <if test="describe != null and describe != ''"> and describe = #{describe} </if>
+		  		</where>
+       
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from industry
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="name != null and name != ''"> and name = #{name} </if>
+		  		  <if test="parentid != null and parentid != ''"> and parentid = #{parentid} </if>
+		  		  <if test="describe != null and describe != ''"> and describe = #{describe} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.qh.pay.domain.IndustryDO">
+		insert into industry
+		(
+			`id`, 
+			`name`, 
+			`parentid`, 
+			`describe`
+		)
+		values
+		(
+			#{id}, 
+			#{name}, 
+			#{parentid}, 
+			#{describe}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.qh.pay.domain.IndustryDO">
+		update industry 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="parentid != null">`parentid` = #{parentid}, </if>
+			<if test="describe != null">`describe` = #{describe}</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+	<delete id="remove">
+		delete from industry where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from industry where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

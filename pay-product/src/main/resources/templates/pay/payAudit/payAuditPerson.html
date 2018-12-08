@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-right" >
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						<div class="columns pull-right padding">
+							<input id="beginDate"  type="text" readonly class="form-control form_datetime" style="width:110px;float: left" placeholder="开始时间" title="开始时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+							<span style="vertical-align:top;padding: 8px;float: left">-</span>
+							<input id="endDate" type="text" readonly class="form-control form_datetime" style="width:110px; float: left" placeholder="结束时间" title="结束时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+						</div>
+						<div class="columns pull-right col-md-2 padding">
+							<input id="orderNo" type="text" class="form-control"
+								placeholder="订单号" pattern="">
+						</div>
+						<div class="columns pull-right col-md-2 padding">
+							<select id="auditResult" name="auditResult" class="form-control">
+								<option value="">所有审核结果</option>
+								<option th:each="auditResult:${auditResults}" th:value="${auditResult.key}" th:text="${auditResult.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-1 nopadding" style="display: none;">
+							<select id="auditType" name="auditType" class="form-control">
+								<option th:each="auditType:${auditTypes}" th:value="${auditType.key}" th:text="${auditType.value}" th:if="${auditType.key eq orderType}" th:selected="selected"></option>
+							</select>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		var offlineTransfer = false;
+		var s_audit_h = "hidden";
+	</script>
+	<div shiro:hasPermission="pay:offlineTransfer">
+		<script type="text/javascript">
+			offlineTransfer = true;
+		</script>
+	</div>
+	<div shiro:hasPermission="pay:payAudit:audit">
+		<script type="text/javascript">
+			s_audit_h = '';
+		</script>
+	</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var auditResults = [[${auditResults}]];
+	    var auditTypes = [[${auditTypes}]];
+	    var orderType = [[${orderType}]];
+	    if(orderType!=0)
+	    	$(".btn-warning").hide();
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/appjs/pay/payAudit/payAuditPerson.js"></script>
+</body>
+</html>

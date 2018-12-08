@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.MerchUserSignDao">
+
+	<select id="get" resultType="com.qh.pay.domain.MerchUserSignDO" parameterType="com.qh.pay.domain.MerchUserSignDO">
+		select
+		`merch_no`,`user_id`,`pay_company`,`pay_merch`,`sign`,`info`,`acct_name`,`acct_type`,`bank_no`,`cert_type`,`cert_no`,`phone`,`cvv2`,`valid_date`,`coll_type`
+		,`card_type`,bank_code from merch_user_sign
+		where user_id = #{userId} and
+		merch_no = #{merchNo} and pay_merch = #{payMerch} and pay_company =
+		#{payCompany} and bank_no = #{bankNo}
+	</select>
+
+	<select id="getMerchUserSigns" resultType="com.qh.pay.domain.MerchUserSignDO" parameterType="com.qh.pay.domain.MerchUserSignDO">
+		select
+		`sign`,`info`,`acct_name`,`acct_type`,`bank_no`,`cert_type`,`cert_no`,`phone`,`cvv2`,`valid_date`,`coll_type` ,`card_type`,bank_code
+		from merch_user_sign
+		where user_id = #{userId} and merch_no =
+		#{merchNo} and pay_merch = #{payMerch} and pay_company = #{payCompany} and acct_type = #{acctType} and card_type = #{cardType}
+	</select>
+
+	<select id="list" resultType="com.qh.pay.domain.MerchUserSignDO">
+		select
+		`merch_no`,`user_id`,`pay_company`,`pay_merch`,`sign`,`info`,`acct_name`,`acct_type`,`bank_no`,`cert_type`,`cert_no`,`phone`,`cvv2`,`valid_date`,`coll_type`
+		,`card_type`,bank_code
+		from merch_user_sign
+		<where>
+			<if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+			<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+			<if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+			<if test="payCompany != null and payCompany != ''"> and pay_company = #{payCompany} </if>
+			<if test="bankNo != null and bankNo != ''"> and bank_no = #{bankNo} </if>
+			<if test="acctName != null and acctName != ''"> and acct_name = #{acctName} </if>
+			<if test="acctType != null and acctType != ''"> and acct_type = #{acctType} </if>
+			<if test="certType != null and certType != ''"> and cert_type = #{certType} </if>
+			<if test="certNo != null and certNo != ''"> and cert_no = #{certNo} </if>
+			<if test="phone != null and phone != ''"> and phone = #{phone} </if>
+			<if test="collType != null and collType != ''"> and coll_type = #{collType} </if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by merch_no desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="count" resultType="int">
+		select count(1) from merch_user_sign
+		<where>
+			<if test="userId != null and userId != ''"> and user_id = #{userId} </if>
+			<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+			<if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+			<if test="payCompany != null and payCompany != ''"> and pay_company = #{payCompany} </if>
+			<if test="bankNo != null and bankNo != ''"> and bank_no = #{bankNo} </if>
+			<if test="acctName != null and acctName != ''"> and acct_name = #{acctName} </if>
+			<if test="acctType != null and acctType != ''"> and acct_type = #{acctType} </if>
+			<if test="certType != null and certType != ''"> and cert_type = #{certType} </if>
+			<if test="certNo != null and certNo != ''"> and cert_no = #{certNo} </if>
+			<if test="phone != null and phone != ''"> and phone = #{phone} </if>
+			<if test="collType != null and collType != ''"> and coll_type = #{collType} </if>
+		</where>
+	</select>
+
+	<insert id="save" parameterType="com.qh.pay.domain.MerchUserSignDO">
+		insert into merch_user_sign(
+		`merch_no`,
+		`user_id`,
+		`pay_company`,
+		`pay_merch`,
+		`sign`,
+		`info`,
+		`acct_name`,
+		<if test="acctType != null and acctType != ''">
+			`acct_type`,
+		</if>
+		<if test="certType != null and certType != ''">
+			`cert_type`,
+		</if>
+		<if test="collType != null and collType != ''">
+			`coll_type`,
+		</if>
+		<if test="cardType != null and cardType != ''">
+			`card_type`,
+		</if>
+		`bank_no`,
+		`cert_no`,
+		`phone`,
+		`cvv2`,
+		`valid_date`,
+		bank_code
+		)
+		values
+		(
+		#{merchNo},
+		#{userId},
+		#{payCompany},
+		#{payMerch},
+		#{sign},
+		#{info},
+		#{acctName},
+		<if test="acctType != null and acctType != ''">
+			#{acctType},
+		</if>
+		<if test="certType != null and certType != ''">
+			#{certType},
+		</if>
+		<if test="collType != null and collType != ''">
+			#{collType},
+		</if>
+		<if test="cardType != null and cardType != ''">
+			#{cardType}
+		</if>
+		#{bankNo},
+		#{certNo},
+		#{phone},
+		#{cvv2},
+		#{validDate},
+		#{bankCode}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.qh.pay.domain.MerchUserSignDO">
+		update merch_user_sign
+		<set>
+			<if test="sign != null">`sign` = #{sign}, </if>
+			<if test="info != null">`info` = #{info}, </if>
+			<if test="acctName != null">`acct_name` = #{acctName}, </if>
+			<if test="acctType != null">`acct_type` = #{acctType}, </if>
+			<if test="certType != null">`cert_type` = #{certType}, </if>
+			<if test="certNo != null">`cert_no` = #{certNo}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+			<if test="cvv2 != null">`cvv2` = #{cvv2}, </if>
+			<if test="validDate != null">`valid_date` = #{validDate},</if>
+			<if test="collType != null">`coll_type` = #{collType}</if>
+		</set>
+		where user_id = #{userId} and merch_no = #{merchNo} and pay_merch =
+		#{payMerch} and pay_company = #{payCompany} and bank_no = #{bankNo}
+	</update>
+
+
+</mapper>

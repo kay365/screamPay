@@ -1,0 +1,16 @@
+衫德需要上传证书 .pfx .cer
+衫德代付接口 SandAgencyPayService 配置类 SandAgencyPayConst
+衫德支付接口 SandPayService 配置类 SandPayConst
+
+------------------------------------------------------------
+
+天付宝需要私钥以及秘钥
+天付宝代付接口 TXAgencyPayService 配置类 TXAgencyPayConst
+天付宝支付接口 TXPayService 配置类 TXPayConst
+
+------------------------------------------------------------
+支付成功代码>>:
+
+天付宝支付 retcode=00
+
+衫德支付 respCode=000000

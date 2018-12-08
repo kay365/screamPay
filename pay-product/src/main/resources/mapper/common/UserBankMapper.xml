@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.common.dao.UserBankDao">
+
+	<select id="get" resultType="com.qh.common.domain.UserBankDO">
+		select `username`,`bank_no`,`bank_code`,`card_type`,`acct_name`,`acct_type`,`cert_type`,`cert_no`,`phone`,`unionpay_no`,`bank_branch`,`cvv2`,`valid_date`,`info`,city,province,bankProvince,bankCity from user_bank 
+			where username = #{username} and bank_no = #{bankNo}
+	</select>
+
+	<select id="list" resultType="com.qh.common.domain.UserBankDO">
+		select `username`,`bank_no`,`bank_code`,`card_type`,`acct_name`,`acct_type`,`cert_type`,`cert_no`,`phone`,`unionpay_no`,`bank_branch`,`cvv2`,`valid_date`,`info`,city,province,bankProvince,bankCity from user_bank
+        <where>
+  		  <if test="username != null and username != ''"> and username = #{username} </if>
+  		  <if test="bankNo != null and bankNo != ''"> and bank_no = #{bankNo} </if>
+  		  <if test="bankCode != null and bankCode != ''"> and bank_code = #{bankCode} </if>
+  		  <if test="cardType != null and cardType != ''"> and card_type = #{cardType} </if>
+  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by username desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+ 	<select id="count" resultType="int">
+		select count(*) from user_bank
+		 <where>
+		 	<if test="username != null and username != ''"> and username = #{username} </if>
+  		  	<if test="bankNo != null and bankNo != ''"> and bank_no = #{bankNo} </if>
+  		  	<if test="bankCode != null and bankCode != ''"> and bank_code = #{bankCode} </if>
+  		  	<if test="cardType != null and cardType != ''"> and card_type = #{cardType} </if>
+		 </where>
+	</select>
+
+	<insert id="save" parameterType="com.qh.common.domain.UserBankDO">
+		insert into user_bank
+		(
+			`username`,
+			`bank_no`,
+			`bank_code`,
+			`card_type`,
+			`acct_name`,
+			`acct_type`,
+			`cert_type`,
+			`cert_no`,
+			`phone`,
+			`unionpay_no`,
+			`bank_branch`,
+			`cvv2`,
+			`valid_date`,
+			`info`,
+			city,
+			province,
+			bankProvince,
+			bankCity
+		)
+		values
+		(
+			#{username},
+			#{bankNo},
+			#{bankCode},
+			#{cardType},
+			#{acctName},
+			#{acctType},
+			#{certType},
+			#{certNo},
+			#{phone},
+			#{unionpayNo},
+			#{bankBranch},
+			#{cvv2},
+			#{validDate},
+			#{info},
+			#{city},
+			#{province},
+			#{bankProvince},
+			#{bankCity}
+		)
+	</insert>
+
+	<update id="update" parameterType="com.qh.common.domain.UserBankDO">
+		update user_bank 
+		<set>
+			<if test="bankCode != null">`bank_code` = #{bankCode}, </if>
+			<if test="cardType != null">`card_type` = #{cardType}, </if>
+			<if test="acctName != null">`acct_name` = #{acctName}, </if>
+			<if test="acctType != null">`acct_type` = #{acctType}, </if>
+			<if test="certType != null">`cert_type` = #{certType}, </if>
+			<if test="certNo != null">`cert_no` = #{certNo}, </if>
+			<if test="phone != null">`phone` = #{phone}, </if>
+			<if test="unionpayNo != null">`unionpay_no` = #{unionpayNo}, </if>
+			<if test="bankBranch != null">`bank_branch` = #{bankBranch}, </if>
+			<if test="cvv2 != null">`cvv2` = #{cvv2}, </if>
+			<if test="validDate != null">`valid_date` = #{validDate}, </if>
+			<if test="info != null">`info` = #{info},</if>
+			<if test="city != null">`city` = #{city},</if>
+			<if test="province != null">`province` = #{province},</if>
+			<if test="bankProvince != null">`bankProvince` = #{bankProvince},</if>
+			<if test="bankCity != null">`bankCity` = #{bankCity}</if>
+		</set>
+		where username = #{username} and bank_no = #{bankNo}
+	</update>
+
+</mapper>

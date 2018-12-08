@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp" ng-controller="myController">
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>平台支付</title>
+<meta name="keywords" content="jfpay支付系统">
+<meta name="description" content="jfpay支付系统">
+<!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+<script>
+	if (window.top !== window.self) {
+		window.top.location = window.location;
+	}
+</script>
+<link rel="stylesheet" type="text/css" href="/css/angularCommon.css"/>
+<link rel="stylesheet" type="text/css" href="/css/pay/payUnion.css"/>
+</head>
+<body>
+<div id="unionpayHeader">
+    <ul class="clear">
+        <li><a href="javascript:history.go(-1)"><img src="/img/payImg/unionpayReturn.png" class="leftImg" width="25" alt=""></a>银联快捷<img src="/img/payImg//payYinLianLogo.png" class="rightImg" alt="" width="80"></li>
+    </ul>
+</div>
+<!-- 銀行卡列表 -->
+<div id="cardList" class="clear ng-hide" ng-show="cardListShow">
+	<div ng-repeat="x in userSigns" class="cardListDiv">
+		<ul>
+			<li ng-click="sureQuickPay($index)"><img src="/img/payImg/unionPay.png" width="30px" /></li>
+			<li ng-click="sureQuickPay($index)"><span class="bankNameSpan" title="{{x.bankCode}}"></span><span ng-bind="x.bankNo"></span></li>
+			<li><img src="/img/payImg/deleBank.png" width="18px" /></li>
+		</ul>
+	</div>
+	<div class="addCardList clear" ng-click="addNewCard()">
+		<ul>
+			<li><img src="/img/payImg/bankAdd.png" alt="" width="80"></li>
+			<li>添加常用卡</li>
+		</ul>
+	</div>
+</div>
+<!-- 新绑定卡 -->
+<div id="cardBing" class="clear ng-hide" ng-show="showTheNewCard">
+	<ul class="clear">
+		<li th:text="${amount}" class="payPrice"></li>
+		<li><span>卡种</span><label>借记卡</label></li>
+		<li>
+			<span>所属银行</span>
+			<select name="checkBankSec" id="checkBank" ng-model="cardBank">
+				<option selected>请选择</option>
+				<option ng-repeat="x in bank_saving"  value="{{x.name}}"  ng-bind="x.bankName" ></option>
+			</select>
+		</li>
+	    <li><input type="text" ng-model="cardNumber" maxlength="24" placeholder="银行卡号" onkeyup="this.value=this.value.replace(/\D/g,'').replace(/....(?!$)/g,'$& ')"/></li>
+		<li><input type="text" value="" placeholder="持卡人姓名" ng-model="userName"></li>
+		<li><input type="text" value="" placeholder="身份证号" ng-model="IDCard"></li>
+		<li><input type="number" value="" placeholder="持卡人银行预留手机号码" ng-model="cardPhone"></li>
+		<li class="getYzmListBind ng-hide" ng-show="sureShowYzm"><input type="text" value="" placeholder="请输入短信验证码" ng-model="cardBindYzm">
+			<label ng-show="bindDaoJiShi" class="reGet" ng-click="getConfirmYzm()">获取验证码</label>
+			<label class="reGet secondLabel" ng-hide="bindDaoJiShi" ng-bind="yzmNumberString"></label>
+		</li>
+		<li class="sureInfoBtn ng-hide" ng-show="hideSureInfoBtn" ng-click="sureInfoMationFun()">确认信息</li>
+		<li class="sureInfoBtn ng-hide" ng-hide="hideSureInfoBtn">提交中...</li>
+	</ul>
+</div>
+<!-- 确认支付 -->
+<div id="getYzmDiv" class="clear ng-hide"  ng-show="showgetYzmDiv">
+	<ul class="clear">
+		<li><span>支付金额</span><label class="payPrice">¥ <m th:text="${amount}"></m></label></li>
+		<li><input type="text" value="" placeholder="请输入短信验证码" ng-model="surePayYzm">
+			<x ng-show="resendSMSShow">
+				<label class="reGet" ng-show="payDaoJiShi" ng-click="secondYzmGet()">重新获取</label>
+				<label ng-hide="payDaoJiShi" class="reGet secondLabel" ng-bind="yzmPayNumberString"></label>
+			</x>
+		</li>
+		<li class="ng-hide surePayBtnList" ng-show="surePayBtn" ng-click="surePayFun()">确认支付</li>
+		<li class="ng-hide surePayBtnList" ng-hide="surePayBtn">支付中...</li>
+	</ul>
+</div>
+<!-- 支付成功！ -->
+<div id="successPay" class="ng-hide" ng-show="successfulPayDiv">
+	<ul>
+		<li><img src="/img/payImg/successPay.png" alt=""></li>
+		<li>您已经成功付款<span th:text="${amount}"></span>元</li>
+		<li><a th:href="${'/pay/return/' + company + '/' + merchNo + '/' + orderNo}" target="_self">返回商户</a></li>
+	</ul>
+</div>
+
+
+<div id="blackBg" class="ng-hide" ng-show="tipsShow"></div>
+<div id="tipsDiv" class="ng-hide" ng-show="tipsShow">
+	<h1 ng-bind="ajaxMsg"></h1>
+</div>
+<!-- 问题反馈  -->
+<!-- <p id="telATag" style="margin-top: 10rem;text-align: center;"><a style="color: #608fd2" ng-click="showTlePhone()">问题反馈</a></p> -->
+<!-- 全局js -->
+<script src="/js/jquery.min.js?v=2.1.4"></script>
+<script th:inline="javascript">
+/*<![CDATA[*/
+	//签约列表
+    var userSigns = [[${userSigns}]];
+	//储蓄卡列表
+	var bank_savings = [[${bank_savings}]];
+	//信用卡列表
+    var bank_credits = [[${bank_credits}]];
+	//用户签约信息
+	var userSign = [[${userSign}]];
+	//卡类型
+	var cardType = [[${cardType}]];
+	//商户号
+	var merchNo = [[${merchNo}]];
+	//订单号
+	var orderNo = [[${orderNo}]];
+	//订单金额
+	var amount = [[${amount}]];
+	//银行卡列表
+	var bankCodeDesc = [[${bankCodeDesc}]];
+	//是否发送验证码  0否-1是
+	var bindCardSMS = [[${bindCardSMS}]];
+	var resendSMS = [[${resendSMS}]];
+	var company = [[${company}]]
+/*]]>*/
+</script>
+<script type="text/javascript" src="/js/angular1.6.7.min.js"></script>
+<script type="text/javascript" src="/js/appjs/pay/payProperty/payUnionpay.js"></script>
+</body>
+<script type="text/javascript">
+	/* console.log(userSigns);
+	console.log("bank_savings:" + bank_savings);
+	console.log("bank_credits:" + bank_credits);
+	console.log("userSign:" + userSign);
+	console.log("cardType:" + cardType);
+	console.log("merchNo:" + merchNo);
+	console.log("orderNo:" + orderNo);
+	console.log("amount:" + amount);
+	console.log(userSigns);
+	console.log(bank_savings);
+	console.log(bindCardSMS); */
+	$(function(){
+		for(var i in bankCodeDesc){
+			$(".bankNameSpan").each(function(index,item,arr){
+				if(i == $(item).attr("title")){
+					$(item).html(bankCodeDesc[i]);
+				}
+			})
+		}
+	});
+</script>
+</html>

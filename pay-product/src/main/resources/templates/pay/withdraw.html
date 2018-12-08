@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link href="/css/layui.css" rel="stylesheet">
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+	<div class="fixed-table-toolbar">
+         <table class="table table-bordered table-hover table-striped">
+             <caption>银行卡信息</caption>
+             <tr>
+             	<th>用户名</th>
+             	<th>银行卡号</th>
+             	<th>银行名称</th>
+             	<th>银行卡类型</th>
+             	<th>账户名</th>
+             	<th>证件号码</th>
+             	<th>手机号码</th>
+             	<th>银行省份</th>
+             	<th>银行城市</th>
+             	<th>支行名称</th>
+             	<th>支付银联行号</th>
+             </tr>
+             <tr class="userBankInfo" th:each="userBank,iterStat:${userBanks}">
+             	 <td style="display: none" th:text="${iterStat.index}"></td>
+                 <td th:text="${userBank.username}"></td>
+                 <td th:text="${userBank.bankNo}"></td>
+                 <td th:text="${bankCodes[userBank.bankCode]}"></td>
+                 <td th:text="${cardTypes[userBank.cardType]}"></td>
+                 <td th:text="${userBank.acctName}"></td>
+                 <td th:text="${userBank.certNo}"></td>
+                 <td th:text="${userBank.phone}"></td>
+                 <td th:text="${userBank.bankProvince}"></td>
+                 <td th:text="${userBank.bankCity}"></td>
+                 <td th:text="${userBank.bankBranch}"></td>
+                 <td th:text="${userBank.unionpayNo}"></td>
+             </tr>
+         </table>
+     </div>
+	<h3 style="color: green">如果银行卡号存在，则修改，不存在则新增</h3>
+	<div class="col-sm-6 col-md-offset-3"><div class="ibox-content">
+		<form class="form-horizontal m-t" id="withdrawForm">
+			<div class="form-group">
+				<label class="col-sm-2 control-label">用户名：</label>
+				<div class="col-sm-4">
+					<input id="username" name="username"  class="form-control" th:value="${username}" maxlength="18">
+				</div>
+				<label class="col-sm-2 control-label">银行卡号：</label>
+				<div class="col-sm-4">
+					<input id="bankNo" name="bankNo" title="如果银行卡号存在，则修改，不存在则新增" class="form-control" type="number" maxlength="19">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">账户类型：</label>
+				<div class="col-sm-4"><span class="form-control" th:text="个人账户"></div>
+				<label class="col-sm-2 control-label">账户名：</label>
+				<div class="col-sm-4">
+					<input id="acctName" name="acctName"  class="form-control"  maxlength="10">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">证件类型：</label>
+				<div class="col-sm-4"><span class="form-control" th:text="身份证"></div>
+				<label class="col-sm-2 control-label">证件号码：</label>
+				<div class="col-sm-4">
+					<input id="certNo" name="certNo"  class="form-control" maxlength="18">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">银行卡类型：</label>
+				<div class="col-sm-4"><span class="form-control" th:text="储蓄卡"></div>
+				<label class="col-sm-2 control-label">手机号码：</label>
+				<div class="col-sm-4">
+					<input id="mobile" name="mobile"  class="form-control" type="number" maxlength="11">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">银行所在省：</label>
+				<div class="col-sm-4">
+					<select id="province" name="province" class="form-control">
+						<option value="">请选择</option>
+						<option th:each="pro:${provinces}" th:value="${pro.id}" th:text="${pro.name}"></option>
+					</select>
+					<input id="bankProvince" name="bankProvince" type="hidden" class="form-control">
+				</div>
+				<label class="col-sm-2 control-label">银行所在市：</label>
+				<div class="col-sm-4">
+					<select id="city" name="city" class="form-control">
+					 </select>
+					 <input id="bankCity" name="bankCity" type="hidden" class="form-control">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">所属银行：</label>
+				<div class="col-sm-4">
+					<select id="bankCode" name="bankCode" class="form-control">
+						<option value="">请选择</option>
+						<option th:each="bc:${bankCodes}" th:value="${bc.key}" th:text="${bc.value}"></option>
+					 </select>
+					 <input id="bankName" name="bankName" type="hidden" class="form-control">
+				</div>
+				<label class="col-sm-2 control-label">支行名称：</label>
+				<div class="col-sm-4">
+					<select id="unionpayNo" name="unionpayNo" class="form-control" style="display: none;">
+					 </select>
+					 <input id="bankBranch" name="bankBranch" type="text" class="form-control">
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label">总余额(￥)：</label>
+				<div class="col-sm-4"><span class="form-control" id="showBalance" th:text="${payAcctBal.balance}"></div>
+				<label class="col-sm-2 control-label">可提现额(￥)：</label>
+				<div class="col-sm-4"><span class="form-control" id="showAvailBal" th:text="${payAcctBal.availBal}"></div>
+			</div>
+			
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label">提现金额：</label>
+				<div class="col-sm-4">
+					<input type="number" name="amount" id="amount" class="form-control" max="100000" 
+						onkeypress="return noNumbers(event)" min="1" placeholder="请输入提现金额">
+				</div>
+				<label class="col-sm-2 control-label">资金密码：</label>
+				<div class="col-sm-4">
+					<input id=fundPassword name="fundPassword" class="form-control"	type="password" maxlength="20" placeholder="请输入资金密码">
+				</div>
+			</div>
+			
+			<div class="form-group" th:if="${userType eq 0}">
+				<label class="col-sm-2 control-label">生成订单数：</label>
+				<div class="col-sm-4">
+					<input type="number" name="orderNum" id="orderNum" class="form-control" 
+						min="1" max="1" placeholder="" value="1">
+				</div>
+				<label class="col-sm-2 control-label">支付公司：</label>
+				<div class="col-sm-4">
+					<select id="payConfigCompany" name="payConfigCompany" class="form-control">
+						<option th:each="payConfigCompany:${payConfigCompany}" th:value="${payConfigCompany.payMerch}" th:attr="company=${payConfigCompany.company}" th:text="${payConfigCompany.callbackDomain+'('+payConfigCompany.payMerch+')'}"></option>
+					</select>
+					<input type="hidden" id="payCompany" name="payCompany"/>
+					<input type="hidden" id="payMerch" name="payMerch"/>
+				</div>
+			</div>
+			<div class="form-group" th:if="${userType ne 0}">
+				<div class="col-sm-4">
+					<input type="hidden" name="orderNum" id="orderNum" class="form-control" value="1">
+				</div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-10 col-sm-offset-2">
+					<button type="submit" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</form>
+	</div></div>
+</div>
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+/*<![CDATA[*/
+    var username = [[${username}]];
+    var payAcctBal = [[${payAcctBal}]];
+    var userBanks = [[${userBanks}]];
+/*]]>*/
+</script>
+</body>
+<script type="text/javascript" src="/js/md5.min.js"></script>
+<script type="text/javascript">
+$().ready(function() {
+	var city;
+	validateRule();
+	$(".editUserBank").click(function(){
+		var $parent = $(this).parent().parent();
+		var usrename = $parent.find("td:first").text();
+		var bankNo = $parent.find("td:eq(1)").text();
+	});
+	$("#province").change(function(){
+		var province = $(this).val();
+		if(province){
+			$.ajax({
+				cache : true,
+				type : "get",
+				url : "/common/getCitysByProvince",
+				data : {provinceId : province},
+				async : false,
+				error : function(request) {
+					parent.layer.alert("Connection error");
+				},
+				success : function(data) {
+					if (data.code == 0) {
+						if(data.data){
+							var datas = data.data;
+							var $selCity = $("#city");
+							$selCity.find("option").remove();
+							$selCity.append("<option value=''>请选择</option>");
+							for ( var i in datas) {
+								$selCity.append("<option value='"+datas[i].id+"' "+(city==datas[i].id?"selected":"")+">"+datas[i].name+"</option>");
+							}
+							$selCity.val(city);
+						}
+					} else {
+						parent.layer.alert(data.msg)
+					}
+				}
+			});
+		}
+	});
+	$("#cityId,#bankCode").change(function(){
+		loadUnionPayData();
+	});
+	//列表选择
+	$(".userBankInfo").click(function(){
+		var index = $(this).find("td:first").text();
+		var userBank = userBanks[index];
+		$("#bankNo").val(userBank.bankNo);
+		$("#acctName").val(userBank.acctName);
+		$("#certNo").val(userBank.certNo);
+		$("#mobile").val(userBank.phone);
+		$("#bankCode").val(userBank.bankCode);
+		var $selUnionpayNo = $("#unionpayNo");
+		$selUnionpayNo.append("<option value='"+userBank.unionpayNo+"'>"+userBank.bankBranch+"</option>");
+		$("#unionpayNo").val(userBank.unionpayNo);
+		$("#bankBranch").val(userBank.bankBranch);
+		$("#province").val(userBank.province);
+		city = userBank.city;
+		$("#province").trigger("change");
+		
+	})
+});
+
+
+function loadUnionPayData(){
+	var cityId = $("#cityId").val();
+	var bankCode = $("#bankCode").val();
+	console.log("bankCode:" + bankCode + ";cityId:" + cityId);
+	if(cityId && bankCode){
+		$.ajax({
+			cache : true,
+			type : "get",
+			url : "/common/getUnionPay",
+			data : {bankCode:bankCode,cityId:cityId},
+			async : false,
+			error : function(request) {
+				parent.layer.alert("Connection error");
+			},
+			success : function(data) {
+				if (data.code == 0) {
+					if(data.data){
+						var datas = data.data;
+						var $selUnionpayNo = $("#unionpayNo");
+						$selUnionpayNo.find("option").remove();
+						$selUnionpayNo.append("<option value=''>请选择</option>");
+						for ( var i in datas) {
+							$selUnionpayNo.append("<option value='"+datas[i].unionPayNo+"'>"+datas[i].bankBranch+"</option>");
+						}
+						
+					}
+				} else {
+					parent.layer.alert(data.msg)
+				}
+			}
+		});
+	}
+}
+
+function clearUnionPay(){
+	$("#unionpayNo").val(null);
+	//$("#bankBranch").val(null);
+}
+
+$.validator.setDefaults({
+	submitHandler : function() {
+		save();
+	}
+});
+
+function save() {
+	var orderNum = $("#orderNum").val();
+	if(!orderNum){
+		orderNum = 1;
+	}
+	var withdrawMoney = $("#amount").val();
+	var availBal = payAcctBal.availBal;
+	if(withdrawMoney == null){
+		layer.msg("请输入提现金额");
+		return;
+	}
+	if(withdrawMoney<1){
+		layer.msg("提现金额需要大于100");
+		return;
+	}
+	if(withdrawMoney*orderNum>availBal){
+		layer.msg("提现余额不足");
+		return;
+	}
+	index = layer.confirm('确定要提现' + withdrawMoney*orderNum + '？', {
+		btn : [ '确定', '取消' ]
+	}, function() {
+		var fundPassword = $("#fundPassword").val();
+		$.ajax({
+			type : "POST",
+			url : "/salt",
+			data:{username:username},
+			success : function(r) {
+				if (r.code == 0) {
+					withdraw(md5(username+md5(fundPassword)+r.data));
+				} else {
+					layer.msg(r.msg);
+				}
+			}
+		})
+	})
+
+}
+//确认充值操作
+function withdraw(fundPassword){
+	var inputPass = $("#fundPassword").val();
+	$("#fundPassword").val(fundPassword);
+	//$("#bankBranch").val($("#unionpayNo").find("option:selected").text());
+	$("#bankProvince").val($("#province").find("option:selected").text());
+	$("#bankCity").val($("#city").find("option:selected").text());
+	$("#bankName").val($("#bankCode").find("option:selected").text());
+	var valueSelected = $("#payConfigCompany").children('option:selected').val();
+	var companySelected = $("#payConfigCompany").children('option:selected').attr("company");
+	$("#payCompany").val(companySelected);
+	$("#payMerch").val(valueSelected);
+	var paramData = $("#withdrawForm").serialize();
+	$("#fundPassword").val(inputPass);
+	$.ajax({
+		type : "POST",
+		url : "/pay/withdraw/confirm",
+		data :paramData,
+		async : false,
+		error : function(request) {
+			parent.layer.alert("Connection error");
+		},
+		success : function(data) {
+			if (data.code == 0) {
+				layer.msg("操作成功");
+				var withdrawMoney = $("#amount").val();
+				$("#showBalance").text(payAcctBal.balance - withdrawMoney);
+				$("#showAvailBal").text(payAcctBal.availBal - withdrawMoney);
+			} else {
+				layer.alert(data.msg);
+			}
+			$("#amount").val(null);
+			$("#fundPassword").val(null);
+			layer.close(index);
+		}
+	});
+}
+
+function validateRule() {
+	var icon = "<i class='fa fa-times-circle'></i> ";
+	$("#withdrawForm").validate({
+		rules : {
+			bankNo :{
+				required:true
+			},
+			mobile :{
+				required:true
+			},
+			certNo : {
+				required : true
+			},
+			bankCode : {
+				required : true
+			},
+			bankBranch : {
+				required : true
+			},
+			amount : {
+				required : true
+			},
+			fundPassword : {
+				required : true
+			}
+		},
+		messages : {
+			bankNo : {
+				required : icon + "请输入银行卡号"
+			},
+			mobile : {
+				required : icon + "请输入手机号"
+			},
+			certNo : {
+				required : icon + "请输入身份证号"
+			},
+			bankCode : {
+				required : icon + "请选择银行"
+			},
+			bankBranch : {
+				required : icon + "银联行号不能为空"
+			},
+			amount : {
+				required : icon + "提现金额不能为空"
+			},
+			fundPassword : {
+				required : icon + "请输入资金密码"
+			}
+		}
+	})
+}
+
+/****
+ * 只能输入两位小数
+ */
+function noNumbers(e) {
+	var keynum
+	var keychar
+	var numcheck
+	if (window.event) { // IE
+		keynum = e.keyCode
+	} else if (e.which) {// Netscape/Firefox/Opera
+		keynum = e.which
+	}
+	keychar = String.fromCharCode(keynum);
+	// 判断是数字,且小数点后面只保留两位小数
+	if (!isNaN(keychar)) {
+		var index = e.currentTarget.value.indexOf(".");
+		if (index >= 0 && e.currentTarget.value.length - index > 2) {
+			return false;
+		}
+		return true;
+	}
+	// 如果是小数点 但不能出现多个 且第一位不能是小数点
+	if ("." == keychar) {
+		if (e.currentTarget.value == "") {
+			return false;
+		}
+		if (e.currentTarget.value.indexOf(".") >= 0) {
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+</script>
+</html>

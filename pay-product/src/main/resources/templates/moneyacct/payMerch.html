@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content ">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-body">
+                    <div class="fixed-table-toolbar">
+                        <div class="columns pull-left col-md-2 nopadding">
+                        	<select id="payCompany" class="form-control">
+								<option value="">所有支付公司</option>
+								<option th:each="payCompany:${payCompanys}" th:value="${payCompany.key}" th:text="${payCompany.value}"></option>
+							</select>
+                        </div>
+                        <div class="columns pull-left col-md-2 nopadding">
+                        	<select id="payMerch" name="payMerch" class="form-control">
+								<option value="">所有支付商户号</option>
+							</select>
+                        </div>
+                        <!-- <div class="columns pull-left col-md-2 nopadding">
+                        	<select id="outChannel" name="outChannel" class="form-control">
+								<option value="">所有支付方式</option>
+								<option th:each="outChannels:${outChannels}" th:value="${outChannels.key}" th:text="${outChannels.value}"></option>
+							</select>
+                        </div> -->
+                        <div class="columns pull-left">
+                            <button class="btn btn-success" onclick="reLoad()">查询</button>
+                        </div>
+                    </div>
+                    <table id="exampleTable" data-mobile-responsive="true">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        	var payCompanys = [[${payCompanys}]];
+	    	var outChannels = [[${outChannels}]];
+        /*]]>*/
+    </script>
+    <div th:include="include :: footer"></div>
+    <script type="text/javascript" src="/js/appjs/moneyacct/payMerch.js"></script>
+</body>
+</html>

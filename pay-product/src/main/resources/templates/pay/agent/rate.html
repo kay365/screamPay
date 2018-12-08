@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<head th:include="include :: header"></head>
+<link href="/js/plugins/layui/css/layui.css" rel="stylesheet">
+<style>
+.wizard-big.wizard > .content {
+    height: 750px;
+    overflow:auto;
+}
+</style>
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>代理商费率</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="agentForm" class="wizard-big">
+                    	<input id="agentId" name="agentId" th:value="${agent.agentId}" class="form-control" type="hidden">
+                        <fieldset>
+                            <div class="row">
+                            	<div class="col-sm-12">
+	                            	<legend>结算方式</legend>
+	                            </div>
+	                            <div class="col-sm-3" th:each="paymentMethod:${paymentMethods}">
+	                            	<div class="form-group">
+	                                	<div class="layui-form" lay-filter="paymentMethodDiv">
+									      <input type="checkbox" name="paymentMethod" th:value="${paymentMethod.key}" th:title="${paymentMethod.value}" th:checked="${#maps.containsKey(rates,paymentMethod.key+'')}"  style="display: none;">
+									    </div>
+								    </div>
+                                </div>
+                                <div class="col-sm-12" style="margin-top: 18px;">
+	                            	<legend>支付费率设置</legend>
+	                            </div>
+	                            <div class="col-sm-3" th:each="paymentMethod:${paymentMethods}" th:with="ocReadOnly=${!#maps.containsKey(rates,paymentMethod.key+'')}">
+	                            	<div class="form-group" th:each="outChannel:${outChannels}" th:if="${'acp' ne outChannel.key}" >
+	                                	<label th:text="${outChannel.value}"></label>
+										<div>
+											<input th:readonly="${ocReadOnly}" min="0.1" th:attr = "ocv=${outChannel.key},ock=${outChannel.value}" th:id="paymentMethod+_+${outChannel.key}+_+${paymentMethod.key}" th:name="paymentMethod+_+${paymentMethod.key}" class="form-control" type="number" style="width:40%;display: inline;">
+											<select th:id="paymentMethod+_+${outChannel.key}+_ru+_+${paymentMethod.key}" class="form-control" style="width:40%;display: inline;" required="required">
+												<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+											</select>
+										</div>
+									</div>
+                                </div>
+                                <div class="col-sm-12" style="margin-top: 18px;">
+	                            	<legend>代付费率设置</legend>
+	                            </div>
+	                            <div class="col-sm-6">
+	                            	<div class="form-group" th:each="outChannel:${outChannels}" th:if="${'acp' eq outChannel.key}">
+	                                	<label th:text="${outChannel.value}"></label>
+										<div>
+											<input th:value="${rate_paid.rate}" min="0.1" th:id="${outChannel.key}" th:name="paymentMethodValue" class="form-control" type="number" style="width:40%;display: inline;" required="required">
+											<select th:id="${outChannel.key}+_ru" class="form-control" style="width:40%;display: inline;" required="required">
+												<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}" th:selected="${bc.key+'' eq rate_paid.unit}"></option>
+											</select>
+										</div>
+									</div>
+                                </div>
+                                <input type="hidden" name="tOneStr" id="tOneStr">
+								<input type="hidden" name="dZeroStr" id="dZeroStr">
+								<input type="hidden" name="paidStr" id="paidStr">
+                            </div>
+                            <div class="col-sm-12" align="right">
+                            	<button  type="submit" class="btn btn-success">保存</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+	<div th:include="include::footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var rates = [[${rates}]];
+	    var parentRates = [[${parentRates}]];
+	 	var parentPaid = [[${parentPaid}]];
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/plugins/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/jquery.selectBoxIt.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/md5.min.js"></script>
+	<<script type="text/javascript" src="/js/appjs/pay/agent/rate.js">
+	</script> 
+	<script type="text/javascript">
+	var isTwoCommit = false;
+	$(document).ready(function () {
+		loadFun();
+    });
+	</script>
+</body>
+</html>

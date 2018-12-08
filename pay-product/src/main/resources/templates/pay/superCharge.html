@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link href="/css/layui.css" rel="stylesheet">
+<body class="gray-bg">
+<div class="wrapper wrapper-content ">
+    <div class="col-sm-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-content">
+                <form class="form-horizontal m-t" id="chargeForm">
+                    <div class="form-group">	
+						<label class="col-sm-2 control-label">商户号：</label>
+						<div class="col-sm-4">
+							<input id="merchNo" name="merchNo" class="form-control" type="text" maxlength="10" placeholder="请输入商户号">
+						</div>
+					</div>
+					<div class="form-group">	
+						<label class="col-sm-2 control-label">充值金额：</label>
+						<div class="col-sm-4">
+							<input type="number" name = "monAmount" id="monAmount"  class="form-control" max="100000" onkeypress="return noNumbers(event)" min="100" placeholder="请输入充值金额">
+						</div>
+					</div>
+					<div class="form-group">	
+						<label class="col-sm-2 control-label">资金密码：</label>
+						<div class="col-sm-4">
+							<input id=fundPassword name="fundPassword" class="form-control" type="password" maxlength="20" placeholder="请输入资金密码">
+						</div>
+					</div>
+					<div class="form-group">
+						<div class="col-sm-10 col-sm-offset-2">
+							<button type="submit" class="btn btn-primary">提交</button>
+						</div>
+					</div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div th:include="include :: footer"></div>
+<script th:inline="javascript">
+	/*<![CDATA[*/
+		var username = [[${username}]];
+	/*]]>*/
+</script>
+</body>
+<script type="text/javascript" src="/js/md5.min.js"></script>
+<script type="text/javascript">
+$().ready(function() {
+	validateRule();
+});
+
+$.validator.setDefaults({
+	submitHandler : function() {
+		save();
+	}
+});
+
+function save() {
+	index = layer.confirm('确定要给商户充值？', {
+		btn : [ '确定', '取消' ]
+	}, function() {
+		var fundPassword = $("#fundPassword").val();
+		$.ajax({
+			type : "POST",
+			url : "/salt",
+			data:{username:username},
+			success : function(r) {
+				if (r.code == 0) {
+					superCharge(md5(username+md5(fundPassword)+r.data));
+				} else {
+					layer.msg(r.msg);
+				}
+			}
+		})
+		
+	})
+
+}
+//确认充值操作
+function superCharge(fundPassword){
+	var merchNo = $("#merchNo").val();
+	var monAmount = $("#monAmount").val();
+	$.ajax({
+		type : "POST",
+		url : "/pay/qr/super/chargeConfirm",
+		data :{merchNo:merchNo,monAmount:monAmount,fundPassword:fundPassword},
+		async : false,
+		error : function(request) {
+			parent.layer.alert("Connection error");
+		},
+		success : function(data) {
+			if (data.code == 0) {
+				parent.layer.msg("操作成功");
+			} else {
+				parent.layer.alert(data.msg);
+			}
+			$("#monAmount").val(null);
+			$("#fundPassword").val(null);
+			layer.close(index);
+		}
+	});
+}
+
+function validateRule() {
+	var icon = "<i class='fa fa-times-circle'></i> ";
+	$("#chargeForm").validate({
+		rules : {
+			merchNo : {
+				required : true
+			},
+			monAmount : {
+				required : true
+			},
+			fundPassword : {
+				required : true
+			}
+		},
+		messages : {
+			merchNo : {
+				required : icon + "请输入商户号"
+			},
+			monAmount : {
+				required : icon + "请输入充值金额"
+			},
+			fundPassword : {
+				required : icon + "请输入资金密码"
+			}
+		}
+	})
+}
+/****
+ * 只能输入两位小数
+ */
+function noNumbers(e) {
+	var keynum
+	var keychar
+	var numcheck
+	if (window.event) { // IE
+		keynum = e.keyCode
+	} else if (e.which) {// Netscape/Firefox/Opera
+		keynum = e.which
+	}
+	keychar = String.fromCharCode(keynum);
+	// 判断是数字,且小数点后面只保留两位小数
+	if (!isNaN(keychar)) {
+		var index = e.currentTarget.value.indexOf(".");
+		if (index >= 0 && e.currentTarget.value.length - index > 2) {
+			return false;
+		}
+		return true;
+	}
+	// 如果是小数点 但不能出现多个 且第一位不能是小数点
+	if ("." == keychar) {
+		if (e.currentTarget.value == "") {
+			return false;
+		}
+		if (e.currentTarget.value.indexOf(".") >= 0) {
+			return false;
+		}
+		return true;
+	}
+	return false;
+}
+</script>
+</html>

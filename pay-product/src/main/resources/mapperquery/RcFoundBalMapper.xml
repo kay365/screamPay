@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.moneyacct.querydao.RcFoundBalDao">
+
+
+	<select id="findOneAgent" resultType="com.qh.moneyacct.domain.MoneyacctDO">
+		select SUM(CASE WHEN fee_type in (6,7) THEN tran_amt ELSE 0 END) AS totalEntry,
+		 	SUM(CASE WHEN fee_type = 10 THEN tran_amt when fee_type in(11,12) THEN -tran_amt ELSE 0 END)AS totalOff,
+		 	SUM(CASE WHEN fee_type = 26 THEN tran_amt ELSE 0 END) AS totalHandFee 
+			from record_found_acct a 
+			<where>
+				<choose> 
+				<when test="userType == 0">
+	  				 and username = #{subAgent}
+	  			</when>
+	            <when test="userType == 6">
+	            	and username = #{subAgent} and username = #{username}
+	            </when>
+	            <when test="userType == 3">
+	            	 <if test="subAgent == username">
+	            	 	and username = #{username}
+	            	 </if>
+	            	 <if test="subAgent != username">
+	            	 	and username = (select agent_number from agent c where c.agent_number=#{subAgent} and c.parent_agent=#{username})
+	            	 </if>
+	            </when>	
+	            </choose>
+			</where>
+	</select>
+	
+	<select id="findAgentList" resultType="com.qh.moneyacct.domain.MoneyacctDO">
+		select c.agent_number agentNo, 
+			SUM(CASE WHEN fee_type in (6,7) THEN tran_amt ELSE 0 END) AS totalEntry,
+		 	SUM(CASE WHEN fee_type = 10 THEN tran_amt when fee_type in(11,12) THEN -tran_amt ELSE 0 END)AS totalOff,
+		 	SUM(CASE WHEN fee_type = 26 THEN tran_amt ELSE 0 END) AS totalHandFee
+		 	 from(select a.agent_number from agent a
+			<where>
+				<choose> 
+				<when test="userType == 0">
+					 <if test="agent != null and agent != ''">
+					 	and a.agent_number in (select agent_number from agent c where c.parent_agent=#{agent})
+					 </if>
+	  			</when>
+	            <when test="userType == 6">
+	            	and a.agent_number = #{username}
+	            </when>
+	            <when test="userType == 3">
+	            	<if test="agent != null and agent != ''">
+					 	and a.agent_number in (select agent_number from agent c where c.parent_agent=#{username})
+					 </if>
+					 <if test="agent == null or agent == ''">
+					 	and a.agent_number = #{username}
+					 </if>
+	            </when>
+	            </choose>
+			</where>
+			<choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+        	</choose>
+			<if test="offset != null and limit != null">
+				limit #{offset}, #{limit}
+			</if>) c LEFT JOIN record_found_acct b on c.agent_number = b.username GROUP BY c.agent_number
+	</select>
+	
+	<select id="findAgentListCount" resultType="int">
+		select count(1) from agent a
+			<where>
+				<choose> 
+				<when test="userType == 0">
+					 <if test="agent != null and agent != ''">
+					 	and a.agent_number in (select agent_number from agent c where c.parent_agent=#{agent})
+					 </if>
+	  			</when>
+	            <when test="userType == 6">
+	            	and a.agent_number = #{username}
+	            </when>
+	            <when test="userType == 3">
+	            	<if test="agent != null and agent != ''">
+					 	and a.agent_number in (select agent_number from agent c where c.parent_agent=#{username})
+					 </if>
+					 <if test="agent == null or agent == ''">
+					 	and a.agent_number = #{username}
+					 </if>
+	            </when>
+	            </choose>
+			</where>
+	</select>
+	
+	<select id="findAgentDetailList" resultType="com.qh.pay.domain.RecordFoundAcctDO">
+		select `order_no`,`merch_no`,`fee_type`,`order_type`,`before_amt`,`tran_amt`,`after_amt`,`profit_loss`,`crt_date` from record_found_acct
+        <where>
+  		  	<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+  		  	<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+	  		<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		<choose>  
+	  			<when test="userType == 0">
+	  				 <if test="agentNo != null and agentNo != ''"> and username = #{agentNo} </if>
+	  				 <if test="username != null and username != ''"> and username = #{username} </if>
+	  			</when>
+	            <when test="userType == 6">
+	            	and username = #{agentNo} and username = #{username})
+	            </when>
+	            <when test="userType == 3">
+	            	<if test="agentNo == username">
+	            	 	and username = #{username}
+	            	 </if>
+	            	 <if test="agentNo != username">
+	            	 	and username = (select agent_number from agent c where c.agent_number=#{agentNo} and c.parent_agent=#{username})
+	            	 </if>
+	            </when>  
+	        </choose>  
+  		  	<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+  		 	<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+  		  	<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+	  	</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by crt_date desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="findAgentDetailListCount" resultType="int">
+		select count(1) from record_found_acct
+        <where>  
+  		  	<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+  		  	<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+  		  	<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		<choose>  
+	  			<when test="userType == 0">
+	  				 <if test="agentNo != null and agentNo != ''"> and username = #{agentNo} </if>
+	  				 <if test="username != null and username != ''"> and username = #{username} </if>
+	  			</when>
+	            <when test="userType == 6">
+	            	and username = #{agentNo} and username = #{username})
+	            </when>
+	            <when test="userType == 3">
+	            	<if test="agentNo == username">
+	            	 	and username = #{username}
+	            	 </if>
+	            	 <if test="agentNo != username">
+	            	 	and username = (select agent_number from agent c where c.agent_number=#{agentNo} and c.parent_agent=#{username})
+	            	 </if>
+	            </when>  
+	        </choose>  
+  		  	<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+  		 	<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+  		  	<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+	  	</where>
+	</select>
+	<select id="findAgentDetailListFooter" resultType="com.qh.pay.domain.FooterDO">
+		select sum(if(profit_loss=1,tran_amt,-tran_amt)) tranAmt
+		from record_found_acct
+		<where>
+			<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+			<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+			<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+			<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		<choose>  
+	  			<when test="userType == 0">
+	  				 <if test="agentNo != null and agentNo != ''"> and username = #{agentNo} </if>
+	  			</when>
+	            <when test="userType == 6">
+	            	and username = #{agentNo} and username = #{username})
+	            </when>
+	            <when test="userType == 3">
+	            	<if test="agentNo == username">
+	            	 	and username = #{username}
+	            	 </if>
+	            	 <if test="agentNo != username">
+	            	 	and username = (select agent_number from agent c where c.agent_number=#{agentNo} and c.parent_agent=#{username})
+	            	 </if>
+	            </when>  
+	        </choose>  
+			<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+			<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+			<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+		</where>
+	</select>
+</mapper>

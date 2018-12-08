@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.query.querydao.OrderLoseQueryDao">
+
+	<select id="list" resultType="com.qh.pay.api.Order">
+		select `order_no`,`merch_no`,`amount`,`business_no`,`pay_company`,`out_channel`,`msg`,crt_date,qh_amount,order_type,order_state from pay_order_lose
+        <where>  
+  		  <if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+  		  <if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  	  <if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+  		  <if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+  		  <if test="businessNo != null and businessNo != ''"> and business_no = #{businessNo} </if>
+  		  <if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+  		  <if test="orderState !=null and orderState !=''"> and order_state = #{orderState}</if>
+  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by crt_date desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(1) from pay_order_lose
+		 <where>  
+		  <if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+		  <if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  	  <if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+  		  <if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+  		  <if test="businessNo != null and businessNo != ''"> and business_no = #{businessNo} </if>
+  		  <if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+  		  <if test="orderState !=null and orderState !=''"> and order_state = #{orderState}</if>
+		 </where>
+	</select>
+	
+</mapper>

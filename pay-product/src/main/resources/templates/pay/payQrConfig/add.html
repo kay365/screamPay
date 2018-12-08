@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">商户号：</label>
+								<div class="col-sm-4">
+									<input id="merchNo" name="merchNo" class="form-control" type="text" maxlength="10" th:value="${merchNo}" th:readonly = "${merchNo}" >
+								</div>
+								<label class="col-sm-2 control-label">支付渠道：</label>
+								<div class="col-sm-4">
+									<select id="outChannel" name="outChannel" class="form-control">
+										<option value="">请选择</option>
+										<option th:each="outChannel:${outChannels}" th:value="${outChannel.key}" th:text="${outChannel.value}"></option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">收款账号：</label>
+								<div class="col-sm-4">
+									<input id="accountNo" name="accountNo" class="form-control" type="text" maxlength="20">
+								</div>
+								<label class="col-sm-2 control-label">收款名称：</label>
+								<div class="col-sm-4">
+									<input id="accountName" name="accountName" class="form-control" type="text" maxlength="20">
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">成本费率：</label>
+								<div class="col-sm-4">
+									<input id="costRate" name="costRate" class="form-control" type="number" max="0.02" min="0" maxlength="6" required="required">
+								</div>
+								<label class="col-sm-2 control-label">手续费率：</label>
+								<div class="col-sm-4">
+									<input id="jfRate" name="jfRate" class="form-control" type="number" max="0.03" min="0" maxlength="6" required="required">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">收款电话：</label>
+								<div class="col-sm-4">
+									<input id="accountPhone" name="accountPhone" class="form-control" type="text" maxlength="20">
+								</div>
+								<label class="col-sm-2 control-label">客服电话：</label>
+								<div class="col-sm-4">
+									<input id="serviceTel" name="serviceTel" class="form-control" type="text" maxlength="20">
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">apiKey信息：</label>
+								<div class="col-sm-10">
+									<input id="apiKey" name="apiKey" class="form-control" type="text" maxlength="80">
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">备注信息：</label>
+								<div class="col-sm-10">
+									<input id="memo" name="memo" class="form-control" type="text" maxlength="50">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-10 col-sm-offset-2">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script type="text/javascript" src="/js/md5.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/payQrConfig/add.js">
+	</script>
+</body>
+</html>

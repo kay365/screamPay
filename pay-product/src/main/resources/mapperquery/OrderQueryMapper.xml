@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.query.querydao.OrderQueryDao">
+
+	<select id="get" resultType="com.qh.pay.api.Order">
+		select
+		`order_no`,`merch_no`,`pay_company`,`pay_merch`,`out_channel`,`title`,`product`,`amount`,`currency`,`order_state`,`return_url`,`notify_url`,`req_time`,`user_id`,`bank_no`,`req_ip`,`memo`,`crt_date`,
+		`real_amount`,`cost_amount`,`qh_amount`,`agent_amount`,`msg`,`business_no`,`clear_state`,`order_type`
+		from pay_order where order_no = #{orderNo} and merch_no = #{merchNo}
+	</select>
+
+	<select id="list" resultType="com.qh.pay.api.Order">
+		select
+		`order_no`,`merch_no`,`pay_company`,`pay_merch`,`out_channel`,`title`,`product`,`amount`,`currency`,`order_state`,`return_url`,`notify_url`,`req_time`,`user_id`,`bank_no`,`req_ip`,`memo`,`crt_date`,
+		`real_amount`,`cost_amount`,`qh_amount`,`agent_amount`,`clear_state`,`order_type`
+		,`msg`,`business_no`
+		from pay_order
+		<where>
+			<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+	  		<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+	  		<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		<if test="payCompany !=null and payCompany !=''"> and pay_company = #{payCompany}</if>
+	  		<if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+	  		<if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+	  		<if test="orderState !=null and orderState !=''"> and order_state = #{orderState}</if>
+	  		<if test="clearState !=null and clearState !=''"> and clear_state = #{clearState}</if>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by crt_date desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="listFooter" resultType="com.qh.pay.domain.FooterDO">
+		select
+		sum(`amount`) amount,sum(`real_amount`) realAmount,sum(`cost_amount`) costAmount,sum(`qh_amount`) qhAmount,sum(`agent_amount`) agentAmount
+		from pay_order
+		<where>
+			<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+			<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+			<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+			<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+			<if test="payCompany !=null and payCompany !=''"> and pay_company = #{payCompany}</if>
+			<if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+			<if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+			<if test="orderState !=null and orderState !=''"> and order_state = #{orderState}</if>
+			<if test="clearState !=null and clearState !=''"> and clear_state = #{clearState}</if>
+		</where>
+	</select>
+
+
+	<select id="count" resultType="int">
+		select count(1) from pay_order
+		<where>
+			<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+	  		<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+	  		<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		<if test="payCompany !=null and payCompany !=''"> and pay_company = #{payCompany}</if>
+	  		<if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+	  		<if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+	  		<if test="orderState !=null and orderState !=''"> and order_state = #{orderState}</if>
+	  		<if test="clearState !=null and clearState !=''"> and clear_state = #{clearStateState}</if>
+		</where>
+	</select>
+
+</mapper>

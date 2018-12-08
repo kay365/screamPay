@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<head th:include="include :: header"></head>
+<link href="/js/plugins/layui/css/layui.css" rel="stylesheet">
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>代理商信息</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="agentForm" class="wizard-big" >
+                        <fieldset>
+                            <div class="row" >
+                            	<div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>开户渠道</label>
+                                        <select id="parentAgent" class="form-control" disabled="disabled">
+											<option th:each="agents:${agentNs}" th:value="${agents.key}" th:text="${agents.value}" th:if="${agents.key eq agent.parentAgent}"></option>
+										</select>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                	<input id="agentId" name="agentId" th:value="${agent.agentId}" class="form-control" type="hidden">
+                                </div>
+                                <div class="col-sm-12">
+                                	<legend>开户信息</legend>
+                                </div>
+                            	<div class="col-sm-6">
+                            		<div class="form-group">
+                                        <label>代理商户号 *</label>
+                                        <input id="agentNumber" class="form-control" type="text" disabled="disabled" th:value="${agent.agentNumber}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>管理员姓名 *</label>
+                                        <input id="managerName"  class="form-control" type="text" disabled="disabled" th:value="${agent.managerName}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>合同有效时间 *</label>
+                                        <div>
+											<input id="contractEffectiveTime" class="form-control" type="text" disabled="disabled" th:value="${agent.contractEffectiveTime}">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                	<div class="form-group">
+                                        <label>代理商类型 *</label>
+                                        <select id="agentType" class="form-control" disabled="disabled">
+											<option th:each="agentType:${agentTypes}" th:value="${agentType.key}" th:text="${agentType.value}" th:if="${agentType.key eq agent.agentType}"></option>
+										</select>	
+                                    </div>
+                                    <div class="form-group">
+                                        <label>管理员电话(唯一) *</label>
+                                        <input id="managerPhone"  class="form-control" type="text" disabled="disabled" th:value="${agent.managerPhone}">
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label>启用时间 *</label>
+                                        <div>
+                                        	<input id="enableTime" type="text"  class="form-control" disabled="disabled" th:value="${#dates.format(agent.enableTime,'yyyy-MM-dd')}" style="width:80%; float: left">
+                                    	</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-12" style="margin-top: 18px;">
+                                	<legend>联系人信息</legend>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>代理商名称 *</label>
+                                        <input id="merchantsName" name="merchantsName" class="form-control required" type="text" required="required" th:value="${agent.merchantsName}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>父级行业 *</label>
+                                        <select id="merchantsIndustryCode" name="merchantsIndustryCode" class="form-control required" required="required">
+											<option value="">--父级行业--</option>
+											<option th:each="IndustryP:${IndustryP}" th:value="${IndustryP.id}" th:text="${IndustryP.name}" th:selected="${IndustryP.id eq agent.merchantsIndustryCode}"></option>
+										</select>
+										<input type="hidden" name="merchantsIndustry" id="merchantsIndustry" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>联系人 *</label>
+                                        <input id="contacts" name="contacts" class="form-control required" type="text" required="required" th:value="${agent.contacts}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>联系人邮箱 *</label>
+                                        <input id="contactsEmail" name="contactsEmail" class="form-control" type="email" required="required" th:value="${agent.contactsEmail}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <div class="form-group">
+                                        <label>代理商简称 *</label>
+                                        <input id="merchantsShortName" name="merchantsShortName" class="form-control required" type="text" required="required" th:value="${agent.merchantsShortName}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>子级行业 *</label>
+                                        <select id="merchantsSubIndustryCode" name="merchantsSubIndustryCode" class="form-control required" required="required">
+											<option value="">--子级行业--</option>
+										</select>
+										<input type="hidden" name="merchantsSubIndustry" id="merchantsSubIndustry" />
+                                    </div>
+                                    <div class="form-group">
+                                        <label>联系人电话 *</label>
+                                        <input id="contactsPhone" name="contactsPhone" class="form-control required" type="tel" required="required" maxlength="11" th:value="${agent.contactsPhone}">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>联系人QQ *</label>
+                                        <input id="contactsQq" name="contactsQq" class="form-control required" type="text" required="required" th:value="${agent.contactsQq}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-12" align="right">
+                                	<button  type="submit" class="btn btn-success">保存</button>
+                                </div>
+							</div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+	<div th:include="include::footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var merchantsSubIndustryCode = [[${agent.merchantsSubIndustryCode}]]; 
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/plugins/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/jquery.selectBoxIt.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/md5.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/agent/info.js">
+	</script> 
+	<script type="text/javascript">
+	var isTwoCommit = false;
+	$(document).ready(function () {
+		loadFun();
+    });
+	</script>
+</body>
+</html>

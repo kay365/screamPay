@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link href="/js/plugins/layui/css/layui.css" rel="stylesheet">
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+	<div class="row">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-title">
+                    <h5>商户费率信息</h5>
+                </div>
+                <div class="ibox-content">
+
+                    <form id="merchantForm" class="wizard-big">
+                    	<input type="hidden" name="merchNo" id="userId" th:value="${merchant.merchNo}"/>
+                        <fieldset>
+                            <div class="row">
+                            	<div class="col-sm-12">
+	                            	<legend>结算方式</legend>
+	                            </div>
+	                            <div class="col-sm-3" th:each="paymentMethod:${paymentMethods}">
+	                            	<div class="form-group">
+	                                	<div class="layui-form" lay-filter="paymentMethodDiv">
+									      <input type="checkbox"  lay-filter="paymentMethod" name="paymentMethod" th:value="${paymentMethod.key}" th:title="${paymentMethod.value}" th:checked="${#maps.containsKey(rates,paymentMethod.key+'')}" style="display: none;">
+									    </div>
+								    </div>
+                                </div>
+                                <div class="col-sm-12" style="margin-top: 18px;">
+	                            	<legend>支付费率设置</legend>
+	                            </div>
+	                            <div class="col-sm-3" th:each="paymentMethod:${paymentMethods}" th:with="ocReadOnly=${!#maps.containsKey(rates,paymentMethod.key+'')}">
+	                            	<div class="form-group" th:each="outChannel:${outChannels}" th:if="${'acp' ne outChannel.key}">
+	                                	<label th:text="${outChannel.value}"></label>
+										<div>
+											<input  th:readonly="${ocReadOnly or !#maps.containsKey(channelSwitch,outChannel.key)}" min="0.1" readonly="readonly" th:attr = "ocv=${outChannel.key},ock=${outChannel.value}" th:id="paymentMethod+_+${outChannel.key}+_+${paymentMethod.key}" th:name="paymentMethod+_+${paymentMethod.key}" class="form-control" type="number" style="width:35%;display: inline;">
+											<select th:id="paymentMethod+_+${outChannel.key}+_ru+_+${paymentMethod.key}" class="form-control" style="width:35%;display: inline;" required="required">
+												<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+											</select>
+											<div class="layui-form" lay-filter="outChannelOnDiv" th:if="${paymentMethod.key eq 3}" style="float: right;width: 50px;">
+												<input type="checkbox" lay-filter="outChannelOn" name="outChannelOn" th:value="${outChannel.key}" th:title="开启" style="display: none;" th:checked="${#maps.containsKey(channelSwitch,outChannel.key)}">
+											</div>
+										</div>
+									</div>
+                                </div>
+                                <div class="col-sm-12" style="margin-top: 18px;">
+	                            	<legend>代付费率设置</legend>
+	                            </div>
+	                            <div class="col-sm-6">
+	                            	<div class="form-group" th:each="outChannel:${outChannels}" th:if="${'acp' eq outChannel.key}">
+	                                	<label th:text="${outChannel.value}"></label>
+										<div>
+											<input th:value="${rate_paid.rate}" th:id="${outChannel.key}" th:name="paymentMethodValue" class="form-control" type="number" style="width:40%;display: inline;" required="required">
+											<select th:id="${outChannel.key}+_ru" class="form-control" style="width:40%;display: inline;" required="required">
+												<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}" th:selected="${bc.key eq rate_paid.unit}"></option>
+											</select>
+										</div>
+									</div>
+                                </div>
+                                <div class="col-sm-12" style="margin-top: 18px;">
+	                            	<legend>其他条件与限制</legend>
+	                            </div>
+	                            <div class="col-sm-6">
+	                            	<div class="form-group">
+                                        <label>是否支持代付 *</label>
+                                        <select id="supportPaid" name="supportPaid" class="form-control" style="display: inline;">
+											<option th:each="bc:${yesOrNos}" th:value="${bc.key}" th:text="${bc.value}" th:selected="${bc.key eq merchant.supportPaid}"></option>
+										</select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>单日交易限额(元/日) *</label>
+                                        <input id="dayLimit" name="dayLimit" class="form-control" type="number" min="1"  style="display: inline;" required="required" th:value="${merchant.dayLimit}">
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+	                            	<div class="form-group">
+                                        <label>是否支持提现 *</label>
+                                        <select id="supportWithdrawal" name="supportWithdrawal" class="form-control" style="display: inline;">
+											<option th:each="bc:${yesOrNos}" th:value="${bc.key}" th:text="${bc.value}" th:selected="${bc.key eq merchant.supportWithdrawal}"></option>
+										</select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>单月交易限额(元/月) *</label>
+                                        <input id="monthLimit" name="monthLimit" class="form-control" type="number" min="1" style="display: inline;" required="required" th:value="${merchant.monthLimit}">
+                                    </div>
+                                </div>
+                                <input type="hidden" name="tOneStr" id="tOneStr">
+								<input type="hidden" name="dZeroStr" id="dZeroStr">
+								<input type="hidden" name="paidStr" id="paidStr">
+                            </div>
+                            <div class="col-sm-12" align="right">
+                            	<button  type="submit" class="btn btn-success">保存</button>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+	<div th:include="include::footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		 var rates = [[${rates}]];
+		 var parentRates = [[${parentRates}]];
+		 var parentPaid = [[${parentPaid}]];
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/plugins/layui/layui.js"></script>
+	<script type="text/javascript" src="/js/jquery.selectBoxIt.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/md5.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/merchant/rate.js">
+	</script>
+	<script type="text/javascript">
+	var isTwoCommit = false;
+	$(document).ready(function () {
+		loadFun();
+    });
+	
+	</script>
+</body>
+</html>

@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<link rel="stylesheet" href="/css/bootstrap-datetimepicker.min.css" />
+<head th:include="include :: header"></head>
+<link href="/css/layui.css" rel="stylesheet">
+<body>
+	<div class="row col-sm-12 wrapper">
+		<form class="form-horizontal m-t" id="merchantForm">
+			<div class="form-group">	
+				<label class="col-sm-2 control-label">指定归属代理：</label>
+				<div class="col-sm-4 nopadding" style="margin-right:0px">
+							<input type="text" class="form-control" th:value="${merchant.parentAgent}" id ="parentAgent" name="parentAgent" readonly="readonly">
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-2 control-label">RSA公钥：</label>
+				<div class="col-sm-10">
+					<textarea id="publicKey" th:field="${merchant.publicKey}" name="publicKey" class="form-control" type="text" rows="3" cols="200"  required="required" maxlength="250"></textarea>
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-2 control-label">商户号：</label>
+				<div class="col-sm-4">
+							<input type="text" class="form-control" th:value="${merchant.merchNo}" id ="merchNo" name="merchNo">
+				</div>
+				<label class="col-sm-2 control-label">代付通道：</label>
+								<div class="col-sm-4">
+									<select id="payConfigCompany" name="payConfigCompany" class="form-control">
+										<option th:each="payConfigCompany:${payConfigCompany}" th:if="${payConfigCompany.payMerch == pcmap.payMerch}" th:selected="selected" th:value="${payConfigCompany.payMerch}" th:text="${payConfigCompany.company}"></option>
+										<option th:each="payConfigCompany:${payConfigCompany}" th:value="${payConfigCompany.payMerch}" th:text="${payConfigCompany.company}"></option>
+									</select>
+									<input type="hidden" id="paidChannelStr" name="paidChannelStr" th:value="${paidChannelStr}"/>
+				</div>
+			</div>
+			<div class="form-group">	
+				<label class="col-sm-2 control-label">通道分类：</label>
+								<div class="col-sm-4">
+									<select id="payChannelType" name="payChannelType" class="form-control">
+										<option th:each="payChannelType:${payChannelTypes}" th:if="${payChannelType.key == merchant.payChannelType}" th:selected="selected"  th:value="${payChannelType.key}" th:text="${payChannelType.value}"></option>
+										<option th:each="payChannelType:${payChannelTypes}" th:value="${payChannelType.key}" th:text="${payChannelType.value}"></option>
+									</select>
+				</div>
+				<label class="col-sm-2 control-label">交易结算方式：</label>
+				<div class="col-sm-4">
+				<select id="paymentMethod" name="paymentMethod" class="form-control">
+					<option th:each="pm:${paymentMethods}" th:if="${pm.key == merchant.paymentMethod}" th:selected="selected"  th:value="${pm.key}" th:text="${pm.value}"></option>
+					<option th:each="pm:${paymentMethods}" th:value="${pm.key}" th:text="${pm.value}"></option>
+				</select>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label">管理员姓名：</label>
+				<div class="col-sm-4">
+					<input  id="managerName" name="managerName" th:value="${merchant.managerName}" class="form-control"
+						type="text" required="required">
+				</div>
+				<label class="col-sm-2 control-label">管理员手机号：</label>
+				<div class="col-sm-4">
+					<input id="managerPhone" name="managerPhone" th:value="${merchant.managerPhone}" class="form-control"
+						type="text" required="required">
+				</div>
+			</div>
+			<div class="form-group">
+				
+				<label class="col-sm-2 control-label">密码：</label>
+				<div class="col-sm-4">
+					<input id="managerPass" name="managerPass" th:value="${merchant.managerPass}" class="form-control"
+						type="password" required="required">
+				</div>
+				<label class="col-sm-2 control-label">签约使用时段：</label>
+				<div class="col-sm-4">
+							<input id="beginDate"  type="text" th:value="${effectiveTime1}"  class="form-control form_datetime" style="width:100px;float: left" placeholder="开始时间" title="开始时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+							<span style="vertical-align:top;padding: 8px;float: left">-</span>
+							<input id="endDate" type="text" th:value="${effectiveTime2}"  class="form-control form_datetime"  style="width:100px; float: left" placeholder="结束时间" title="结束时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+							<input id="contractEffectiveTime" name="contractEffectiveTime" class="form-control" type="hidden">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">商户名称 ：</label>
+				<div class="col-sm-4">
+					<input id="merchantsName" name="merchantsName" th:value="${merchant.merchantsName}" class="form-control"
+						type="text" required="required">
+				</div>
+				<label class="col-sm-2 control-label">商户简称：</label>
+				<div class="col-sm-4">
+					<input id="merchantsShortName" name="merchantsShortName" th:value="${merchant.merchantsShortName}"
+						class="form-control" type="text" required="required">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">商户行业：</label>
+				<div class="col-sm-4">
+					<select id="merchantsIndustryCode" name="merchantsIndustryCode" class="form-control" style="display: inline;">
+										<option value="">--父级行业--</option>
+										<option th:each="IndustryP:${IndustryP}" th:if="${IndustryP.id == merchant.merchantsIndustryCode}" th:selected="selected" th:value="${IndustryP.id}" th:text="${IndustryP.name}"></option>
+										<option th:each="IndustryP:${IndustryP}" th:value="${IndustryP.id}" th:text="${IndustryP.name}"></option>
+					</select>
+					<input type="hidden" name="merchantsIndustry" id="merchantsIndustry" th:value="${merchant.merchantsIndustry}"/>
+					
+				</div>
+				<div class="col-sm-4">
+					<select id="merchantsSubIndustryCode" name="merchantsSubIndustryCode" class="form-control" style="display: inline;">
+										<option th:each="pro:${IndustryS}" th:value="${pro.id}" th:if="${pro.id == merchant.merchantsSubIndustryCode}" th:selected="selected" th:text="${pro.name}"></option>
+										<option th:each="pro:${IndustryS}" th:value="${pro.id}" th:text="${pro.name}"></option>
+					</select>
+					<input type="hidden" name="merchantsSubIndustry" id="merchantsSubIndustry" th:value="${merchant.merchantsSubIndustry}"/>
+				</div>
+			</div>
+			
+			<div class="form-group">
+				<label class="col-sm-2 control-label">联系人：</label>
+				<div class="col-sm-4">
+					<input id="contacts" name="contacts" th:value="${merchant.contacts}" class="form-control"
+						type="text" required="required">
+				</div>
+				<label class="col-sm-2 control-label">联系人电话：</label>
+				<div class="col-sm-4">
+					<input id="contactsPhone" name="contactsPhone" th:value="${merchant.contactsPhone}" class="form-control"
+						type="text" required="required" maxlength="11">
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-2 control-label">联系人邮箱：</label>
+				<div class="col-sm-4">
+					<input id="contactsEmail" name="contactsEmail" th:value="${merchant.contactsEmail}" class="form-control"
+						type="text" required="required">
+				</div>
+				<label class="col-sm-2 control-label">联系人QQ ：</label>
+				<div class="col-sm-4">
+					<input id="contactsQq" name="contactsQq" th:value="${merchant.contactsQq}" class="form-control"
+						type="text" required="required">
+				</div>
+			</div>
+
+			<div class="layui-tab">
+			  <ul class="layui-tab-title" >
+			    <li class="layui-this">代理商实名</li>
+			    <li>费率设置</li>
+			    <li>渠道开关</li>
+			  </ul>
+			  <div class="layui-tab-content">
+			  	<div class="layui-tab-item layui-show">
+			  				<div class="form-group">	
+								<label class="col-sm-2 control-label">省份   [实名信息 开始]：</label>
+								<div class="col-sm-4">
+									<select id="provinceCode" name="provinceCode" class="form-control">
+										<option value="">请选择</option>
+										<option th:each="pro:${provinces}" th:value="${pro.id}" th:if="${pro.id == merchant.provinceCode}" th:selected="selected" th:text="${pro.name}"></option>
+										<option th:each="pro:${provinces}" th:value="${pro.id}" th:text="${pro.name}"></option>
+									</select>
+									<input type="hidden" name="province" id="province" th:value="${merchant.province}"/>
+								</div>
+								<label class="col-sm-2 control-label">城市：</label>
+								<div class="col-sm-4">
+									<select id="cityCode" name="cityCode" class="form-control">
+									<option th:each="pro:${citys}" th:if="${pro.id == merchant.cityCode}" th:selected="selected" th:value="${pro.id}" th:text="${pro.name}"></option>
+										<option th:each="pro:${citys}" th:value="${pro.id}" th:text="${pro.name}"></option>
+					 				</select>
+					 				<input type="hidden" name="city" id="city" th:value="${merchant.city}"/>
+								</div>
+								
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-2 control-label">营业执照号 ：</label>
+								<div class="col-sm-4">
+									<input id="merchantRegisteredNumber" name="merchantRegisteredNumber" th:value="${merchant.merchantRegisteredNumber}" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">名称  ：</label>
+								<div class="col-sm-4">
+									<input id="merchantName" name="merchantName" th:value="${merchant.merchantName}" class="form-control" type="text">
+								</div>
+							</div>
+								<div class="form-group">	
+								<label class="col-sm-2 control-label">类型 ：</label>
+								<div class="col-sm-4">
+									<select id="merchantType" name="merchantType" class="form-control">
+										<option  th:value="1" th:text="企业商户"></option>
+									</select>
+								</div>
+								<label class="col-sm-2 control-label">注册地址  ：</label>
+								<div class="col-sm-4">
+									<input id="merchantAddress" name="merchantAddress" th:value="${merchant.merchantAddress}" class="form-control" type="text">
+								</div>
+							</div>
+								<div class="form-group">	
+								<label class="col-sm-2 control-label">注册资本 ：</label>
+								<div class="col-sm-4">
+									<input id="merchantRegisteredCapital" name="merchantRegisteredCapital" th:value="${merchant.merchantRegisteredCapital}" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">营业期限：</label>
+								<div class="col-sm-4">
+									<input id="beginDateT" name="beginDateT" th:value="${businessTerm1}" type="text"  class="form-control form_datetime" required="required" style="width:100px;float: left" placeholder="开始时间"  data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+									<span style="vertical-align:top;padding: 8px;float: left">-</span>
+									<input id="endDateT" name="endDateT" th:value="${businessTerm2}" type="text"  class="form-control form_datetime" required="required" style="width:100px; float: left" placeholder="结束时间"  data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+									<input id="merchantBusinessTerm" name="merchantBusinessTerm" class="form-control" type="hidden">
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">经营范围 ：</label>
+								<div class="col-sm-4">
+									<input id="merchantBusinessScope" name="merchantBusinessScope" th:value="${merchant.merchantBusinessScope}" class="form-control" type="text">
+								</div>
+								
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-2 control-label">法人姓名 ：</label>
+								<div class="col-sm-4">
+									<input id="legalerName" name="legalerName" th:value="${merchant.legalerName}" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">法人证件类型  ：</label>
+								<div class="col-sm-4">
+								<select id="legalerCardType" name="legalerCardType" class="form-control">
+										<option th:each="pro:${certTypes}" th:if="${pro.key == merchant.legalerCardType}" th:selected="selected" th:value="${pro.key}" th:text="${pro.value}"></option>
+										<option th:each="pro:${certTypes}" th:value="${pro.key}" th:text="${pro.value}"></option>
+									</select>
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-2 control-label">法人证件号码：</label>
+								<div class="col-sm-4">
+									<input id="legalerCardNumber" name="legalerCardNumber" th:value="${merchant.legalerCardNumber}" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">法人证件有效时间：</label>
+								<div class="col-sm-4">
+									<input id="beginDateL" name="beginDateL" th:value="${cardEffectiveTime1}" type="text"  class="form-control form_datetime" required="required" style="width:100px;float: left" placeholder="开始时间" title="开始时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+									<span style="vertical-align:top;padding: 8px;float: left">-</span>
+									<input id="endDateL" name="endDateL" th:value="${cardEffectiveTime2}" type="text"  class="form-control form_datetime" required="required" style="width:100px; float: left" placeholder="结束时间" title="结束时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+									<input id="legalerCardEffectiveTime" name="legalerCardEffectiveTime" class="form-control" type="hidden">
+								</div>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-4 control-label">
+									<button type="button" class="layui-btn" id="img_front" style="width: 100%;">
+			                            <i class="fa fa-cloud"></i>证件正面
+			                        </button>
+								</label>
+								<label class="col-sm-4 control-label">
+									<button type="button" class="layui-btn" id="img_back" style="width: 100%;">
+			                            <i class="fa fa-cloud"></i>证件反面
+			                        </button>
+								</label>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-4 control-label">
+                                    <img id="img_f" class="img-responsive" th:src="${merchant.legalerCardPicFront}"/>
+                                    <input type="hidden" name="legalerCardPicFront" id="legalerCardPicFront" th:value="${merchant.legalerCardPicFront}"/>
+								</label>
+								<label class="col-sm-4 control-label">
+									<img id="img_b" class="img-responsive" th:src="${merchant.legalerCardPicBack}"/>
+									<input type="hidden" name="legalerCardPicBack" id="legalerCardPicBack" th:value="${merchant.legalerCardPicBack}"/>
+								</label>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-4 control-label">
+									<button type="button" class="layui-btn" id="img_bis" style="width: 100%;">
+			                            <i class="fa fa-cloud"></i>营业执照影印件
+			                        </button>
+								</label>
+								</div>
+														<div class="form-group">	
+								<label class="col-sm-4 control-label">
+                                    <img id="img_bus" class="img-responsive" th:src="${merchant.merchantBusinessPhotocopy}"/>
+                                    <input type="hidden" name="merchantBusinessPhotocopy" id="merchantBusinessPhotocopy" th:value="${merchant.merchantBusinessPhotocopy}"/>
+								</label>
+							</div>
+														<div class="form-group">	
+								<label class="col-sm-2 control-label">账户类型    [结算账户 开始]：</label>
+								<div class="col-sm-2">
+									<select id="accountType" name="accountType" class="form-control">
+										<option th:each="acctType:${acctTypes}" th:if="${acctType.key == merchant.accountType}" th:selected="selected"  th:value="${acctType.key}" th:text="${acctType.value}"></option>
+										<option th:each="acctType:${acctTypes}" th:value="${acctType.key}" th:text="${acctType.value}"></option>
+									</select>
+								</div>
+								<label class="col-sm-2 control-label">账户开户城市：</label>
+								<div class="col-sm-3">
+									<select id="accountProvinceCode" name="accountProvinceCode" class="form-control">
+										<option value="">--省份--</option>
+										<option th:each="pro:${provinces}" th:if="${pro.id == merchant.accountProvinceCode}" th:selected="selected" th:value="${pro.id}" th:text="${pro.name}"></option>
+										<option th:each="pro:${provinces}" th:value="${pro.id}" th:text="${pro.name}"></option>
+									</select>
+									<input type="hidden" name="accountProvince" id="accountProvince" th:value="${merchant.accountProvince}"/>
+								</div>
+								<div class="col-sm-3">
+									<select id="accountCityCode" name="accountCityCode" class="form-control">
+									<option th:each="pro:${accountcitys}" th:if="${pro.id == merchant.accountCityCode}" th:selected="selected" th:value="${pro.id}" th:text="${pro.name}"></option>
+										<option th:each="pro:${accountcitys}" th:value="${pro.id}" th:text="${pro.name}"></option>
+					 				</select>
+					 				<input type="hidden" name="accountCity" id="accountCity" th:value="${merchant.accountCity}"/>
+								</div>
+								</div>
+														<div class="form-group">	
+								
+								<label class="col-sm-2 control-label">账户开户银行：</label>
+								<div class="col-sm-4">
+									<select id="accountBankCode" name="accountBankCode" class="form-control">
+										<option value="">请选择</option>
+										<option th:each="bc:${bankCodes}" th:if="${bc.key == merchant.accountBankCode}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${bankCodes}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									 </select>
+									 <input type="hidden" name="accountBank" id="accountBank" th:value="${merchant.accountBank}"/>
+								</div>
+								<label class="col-sm-2 control-label">账户开户银行支行：</label>
+								<div class="col-sm-4">
+									<select id="accountBankBranchCode" name="accountBankBranchCode" class="form-control">
+					 					<option th:each="bc:${bankBranch}" th:if="${bc.unionPayNo == merchant.accountBankBranchCode}" th:selected="selected" th:value="${bc.unionPayNo}" th:text="${bc.bankBranch}"></option>
+										<option th:each="bc:${bankBranch}" th:value="${bc.unionPayNo}" th:text="${bc.bankBranch}"></option>
+					 				</select>
+					 				<input type="hidden" name="accountBankBranch" id="accountBankBranch" th:value="${merchant.accountBankBranch}"/>
+								</div>
+							</div>
+														
+														<div class="form-group">	
+								
+								<label class="col-sm-2 control-label">账户开户人：</label>
+								<div class="col-sm-4">
+									<input id="accountOpenPerson" name="accountOpenPerson" th:value="${merchant.accountOpenPerson}" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">账户开户账号(结算账号)：</label>
+								<div class="col-sm-4">
+									<input id="accountOpenNumber" name="accountOpenNumber" th:value="${merchant.accountOpenNumber}" class="form-control" type="text">
+								</div>
+							</div>
+														<div class="form-group">	
+								
+								<label class="col-sm-2 control-label">开户人身份证号码：</label>
+								<div class="col-sm-4">
+									<input id="accountOpenCardNumber" name="accountOpenCardNumber" th:value="${merchant.accountOpenCardNumber}" class="form-control" type="text">
+								</div>
+								<label class="col-sm-2 control-label">银行预留手机号：</label>
+								<div class="col-sm-4">
+									<input id="accountOpenPhone" name="accountOpenPhone" th:value="${merchant.accountOpenPhone}" class="form-control" type="text" maxlength="11">
+								</div>
+							</div>
+								
+								<div class="form-group">	
+								<label class="col-sm-4 control-label">
+									<button type="button" class="layui-btn" id="img_pic" style="width: 100%;">
+			                            <i class="fa fa-cloud"></i>卡/证影印件
+			                        </button>
+								</label>
+								</div>
+														<div class="form-group">	
+								<label class="col-sm-4 control-label">
+                                    <img id="img_p" class="img-responsive" th:src="${merchant.accountPic}"/>
+                                    <input type="hidden" name="accountPic" id="accountPic" th:value="${merchant.accountPic}"/>
+								</label>
+							</div>
+			  	</div>
+			    <div class="layui-tab-item">
+			    	<div class="form-group">	
+								<label class="col-sm-2 control-label" >支付渠道与方式</label>
+								<label class="col-sm-5 control-label" style="text-align: left;">T+1自动结算-代理费率设置</label>
+								<label class="col-sm-5 control-label" style="text-align: left;">D+0垫付结算-代理费率设置</label>
+					</div>
+					
+			    	<div class="form-group">	
+								<label class="col-sm-2 control-label">微信WAP支付</label>
+								<div class="col-sm-5">
+									<input id="wap_t1" name="wap_t1" th:value="${rate_t1.wap.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="wap_t1_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_t1.wap.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								<div class="col-sm-5">
+									<input id="wap_d0" name="wap_d0" th:value="${rate_d0.wap.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="wap_d0_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_d0.wap.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								
+					</div>
+					<div class="form-group">	
+								<label class="col-sm-2 control-label">微信公众号</label>
+								<div class="col-sm-5">
+									<input id="gzh_t1" name="gzh_t1" th:value="${rate_t1.gzh.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="gzh_t1_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_t1.gzh.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								<div class="col-sm-5">
+									<input id="gzh_d0" name="gzh_d0" th:value="${rate_d0.gzh.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="gzh_d0_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}"  th:if="${bc.key == rate_d0.gzh.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								
+					</div>
+			    	<div class="form-group">	
+								<label class="col-sm-2 control-label">微信扫码</label>
+								<div class="col-sm-5">
+									<input id="wx_t1" name="wx_t1" th:value="${rate_t1.wx.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="wx_t1_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_t1.wx.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								<div class="col-sm-5">
+									<input id="wx_d0" name="wx_d0" th:value="${rate_d0.wx.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="wx_d0_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_d0.wx.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								
+					</div>
+			    	<div class="form-group">	
+								<label class="col-sm-2 control-label">QQ钱包扫码</label>
+								<div class="col-sm-5">
+									<input id="qq_t1" name="qq_t1" th:value="${rate_t1.qq.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="qq_t1_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_t1.qq.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								<div class="col-sm-5">
+									<input id="qq_d0" name="qq_d0" th:value="${rate_d0.qq.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="qq_d0_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_d0.qq.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								
+					</div>
+			    	<div class="form-group">	
+								<label class="col-sm-2 control-label">支付宝扫码</label>
+								<div class="col-sm-5">
+									<input id="ali_t1" name="ali_t1" th:value="${rate_t1.ali.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="ali_t1_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_t1.ali.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								<div class="col-sm-5">
+									<input id="ali_d0" name="ali_d0" th:value="${rate_d0.ali.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="ali_d0_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_d0.ali.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								
+					</div>
+			    	<div class="form-group">	
+								<label class="col-sm-2 control-label">快捷支付</label>
+								<div class="col-sm-5">
+									<input id="q_t1" name="q_t1" th:value="${rate_t1.q.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="q_t1_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_t1.q.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								<div class="col-sm-5">
+									<input id="q_d0" name="q_d0" th:value="${rate_d0.q.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="q_d0_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_d0.q.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								
+					</div>
+			    	<div class="form-group">	
+								<label class="col-sm-2 control-label">网银支付</label>
+								<div class="col-sm-5">
+									<input id="wy_t1" name="wy_t1" th:value="${rate_t1.wy.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="wy_t1_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_t1.wy.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								<div class="col-sm-5">
+									<input id="wy_d0" name="wy_d0" th:value="${rate_d0.wy.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="wy_d0_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_d0.wy.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								
+					</div>
+					<div class="form-group">	
+								<label class="col-sm-2 control-label">代付</label>
+								<div class="col-sm-5">
+									<input id="acp" name="acp" th:value="${rate_paid.rate}" class="form-control" type="text" style="width:50%;display: inline;">
+									<select id="acp_u" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${rateUnits}" th:if="${bc.key == rate_paid.unit}" th:selected="selected" th:value="${bc.key}" th:text="${bc.value}"></option>
+										<option th:each="bc:${rateUnits}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								
+					</div>
+					<div class="form-group">	
+								<label class="col-sm-12 control-label" style="text-align: center;background-color: #cccccc;padding-bottom: 7px;">其他限制条件</label>
+					</div>
+					<div class="form-group">	
+								<label class="col-sm-2 control-label">是否支持代付</label>
+								<div class="col-sm-10">
+									<select id="supportPaid" name="supportPaid" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${yesOrNo}" th:value="${bc.key}" th:text="${bc.value}"></option>
+									</select>
+								</div>
+								<label class="col-sm-2 control-label">是否支持提现</label>
+								<div class="col-sm-10">
+									<select id="supportWithdrawal" name="supportWithdrawal" class="form-control" style="width:30%;display: inline;">
+										<option th:each="bc:${yesOrNo}" th:value="${bc.key}" th:text="${bc.value}" th:selected="${bc.key eq merchant.supportWithdrawal}"></option>
+									</select>
+								</div>
+								
+					</div>
+					<div class="form-group">	
+								<label class="col-sm-2 control-label">单日交易限额</label>
+								<div class="col-sm-10">
+									<input id="dayLimit" name="dayLimit" th:value="${merchant.dayLimit}" class="form-control" type="text" style="width:25%;display: inline;">
+									
+								<div style="display: inline;">
+									元/日									
+								</div>
+								</div>
+								
+					</div>
+					<div class="form-group">	
+								<label class="col-sm-2 control-label">单月交易限额</label>
+								<div class="col-sm-10">
+									<input id="monthLimit" name="monthLimit" th:value="${merchant.monthLimit}" class="form-control" type="text" style="width:25%;display: inline;">
+									<div style="display: inline;">
+										元/月							
+									</div>
+								</div>
+					</div>
+					<div class="form-group">	
+								<label class="col-sm-2 control-label">信用卡资金占比</label>
+								<div class="col-sm-10">
+									<input id="creditCardCapitalScale" name="creditCardCapitalScale" th:value="${merchant.creditCardCapitalScale}" class="form-control" type="text" style="width:25%;display: inline;">
+									<div style="display: inline;">
+										%，超过设定值后该商户可能被禁止交易					
+									</div>
+								</div>
+					</div>
+			    	
+					<input type="hidden" name="tOneStr" id="tOneStr">
+					<input type="hidden" name="dZeroStr" id="dZeroStr">
+					<input type="hidden" name="paidStr" id="paidStr">
+			    </div>
+			    <div class="layui-tab-item">
+			    	<div class="form-group">	
+								<label class="col-sm-12" style="cursor: pointer;margin-bottom: 15px">
+						<input id="channelCheckAll" type="checkbox" th:text="全选" th:value="1">
+					</label>
+			  		<label class="col-sm-3" th:each="outChannel:${outChannels}"  style="cursor: pointer">
+			  		<!-- <label  th:each="ch:${chanelS}"  style="cursor: pointer"> -->
+						<input type="checkbox"  name = "outChannel"  th:checked="${#maps.containsKey(chanelS, outChannel.key)?'checked':'false'}" th:value="${outChannel.key}" th:text="${outChannel.value}">
+					</label>
+					</div>
+			    	
+			    </div>
+			  </div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-12 col-sm-offset-3">
+					<button type="submit" class="btn btn-primary">提交</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div th:include="include::footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+		var outChannels = [[${outChannels}]];
+	    var payConfigCompanys = [[${payConfigCompany}]];
+	    var payChannelTypes = [[${payChannelTypes}]];
+	    console.log(payChannelTypes)
+	    var outChannels = [[${outChannels}]];
+	    
+	    var merchNo = [[${merchNo}]];
+	    var agentNs = [[${agentNs}]];
+	/*]]>*/
+	</script>
+	
+	<script type="text/javascript" src="/js/layui.js"></script>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/jquery.selectBoxIt.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/md5.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/merchant/edit.js">
+	</script>
+	<script type="text/javascript">
+	$(".form_datetime").datetimepicker({
+		language : 'zh-CN',
+		format: 'yyyy-mm-dd',
+		weekStart: 1,
+		todayBtn:  1,
+		autoclose: 1,
+		todayHighlight: 1,
+		startView: 2,
+		minView: 2,
+		forceParse: 0
+	});
+	
+	</script>
+</body>
+</html>

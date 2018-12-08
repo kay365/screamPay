@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<div class="columns pull-left col-md-1 nopadding">
+                            <select id="oneAgent" name="oneAgent" class="form-control" th:remove="${oneAgents}?none : all">
+								<option value="">一级代理</option>
+								<option th:each="oneAgent:${oneAgents}" th:value="${oneAgent.agentNumber}" th:text="${oneAgent.merchantsShortName}"></option>
+							</select>
+							 <select id="oneAgent" name="oneAgent" class="form-control" th:remove="${agentNumber}?none : all">
+								<option th:value="${agentNumber}" th:text="${agentNumber}"></option>
+							</select>
+                        </div>
+                        <div class="columns pull-left col-md-1 nopadding">
+                            <select id="twoAgent" name="twoAgent" class="form-control" th:remove="${twoAgents}?none : all">
+								<option value="">二级代理</option>
+								<option th:each="twoAgent:${twoAgents}" th:value="${twoAgent.agentNumber}" th:text="${twoAgent.merchantsShortName}"></option>
+							</select>
+							<select id="twoAgent" name="twoAgent" class="form-control" th:remove="${oneAgents}?none : all">
+								<option value="">二级代理</option>
+							</select>
+                        </div>
+                        <div class="columns pull-left col-md-1 nopadding">
+                            <select id="merchNo" name="merchNo" class="form-control" th:remove="${merchants}?none : all">
+								<option value="">所有商户</option>
+								<option th:each="merchant:${merchants}" th:value="${merchant.merchNo}" th:text="${merchant.merchantsShortName}"></option>
+							</select>
+							<select id="merchNo" name="merchNo" class="form-control" th:remove="${merchNo}?none : all">
+								<option th:value="${merchNo}" th:text="${merchNo}"></option>
+							</select>
+							<select id="merchNo" name="merchNo" class="form-control" th:remove="${oneAgents}?none : all">
+								<option value="">所有商户</option>
+							</select>
+                        </div>
+						<!--  div class="columns pull-left col-md-2 nopadding" style="margin-right:15px" th:remove="${merchNo}? all : none">
+							<div class = "merchNo"></div>
+							<input type="hidden" id ="merchNo">
+						</div-->
+						<div class="columns pull-left col-md-2 nopadding">
+							<input id="orderNo" type="text" class="form-control" placeholder="请输入订单号">
+						</div>
+						<div class="columns pull-left col-md-4">
+							<input id="beginDate"  type="text" readonly class="form-control form_datetime" style="width:100px;float: left" placeholder="开始时间" title="开始时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+							<span style="vertical-align:top;padding: 6px;float: left">-</span>
+							<input id="endDate" type="text" readonly class="form-control form_datetime" style="width:100px;float: left" placeholder="结束时间" title="结束时间" data-date-format="yyyy-MM-dd" data-link-format="yyyy-MM-dd">
+						</div>
+						<div class="columns pull-left">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var outChannels = [[${outChannels}]];
+	    var payCompanys = [[${payCompanys}]];
+	    var orderStates = [[${orderStates}]];
+	    var cardTypes = [[${cardTypes}]];
+	    var acctTypes = [[${acctTypes}]];
+	    var merchNo = [[${merchNo}]];
+	    var merchNos = null;
+	    var syncOrderFlag = false;
+	    var jfOutChannels = [[${jfOutChannels}]];
+	/*]]>*/
+	</script>
+	<div th:remove="${merchNo}? all : none">
+		<script th:inline="javascript">
+			merchNos = [[${merchNos}]];
+		</script>
+	</div>
+	<div shiro:hasPermission="pay:syncOrder">
+		<script type="text/javascript">
+			syncOrderFlag = true;
+		</script>
+	</div>
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.min.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/bootstrap-datetimepicker.zh-CN.js"></script><!-- 日期框 -->
+	<script type="text/javascript" src="/js/jquery.selectBoxIt.min.js"></script>
+	<script type="text/javascript" src="/js/numeral.min.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/comm.js"></script>
+	<script type="text/javascript" src="/js/appjs/pay/orderQuery/order.js"></script>
+</body>
+</html>

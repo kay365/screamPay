@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<link rel="stylesheet" href="/css/plugins/switch/bootstrap-switch.min.css"/>
+<style>
+.onoffswitch-inner:before {
+    content: "开启";
+    background-color: #1ab394;
+    color: #FFFFFF;
+    text-align: left;
+}
+
+.onoffswitch-inner:after {
+    content: "禁用";
+    background-color: #FFFFFF;
+    color: #999999;
+    text-align: right;
+}
+</style>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="col-sm-12">
+			<div class="ibox">
+				<div class="ibox-body">
+					<div class="fixed-table-toolbar">
+						<!-- div class="columns pull-left">
+							<button shiro:hasPermission="pay:merchant:add" type="button" class="btn  btn-primary" onclick="add()">
+								<i class="fa fa-plus" aria-hidden="true"></i> 添加商户
+							</button>
+						</div> -->
+						<div class="columns pull-right">
+							<button class="btn btn-success" onclick="reLoad()">查询</button>
+						</div>
+						
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="merchNo" type="text" class="form-control" placeholder="输入商户号">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<input id="merchantsName" type="text" class="form-control"
+								placeholder="输入商户名称">
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select id="status" name="status" class="form-control">
+								<option value="">状态</option>
+								<option th:each="s:${status}" th:value="${s.key}" th:text="${s.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select id="auditStatus" name="auditStatus" class="form-control">
+								<option value="">审核状态</option>
+								<option th:each="as:${auditStatus}" th:value="${as.key}" th:text="${as.value}"></option>
+							</select>
+						</div>
+						<div class="columns pull-right col-md-2 nopadding">
+							<select id="payChannelType" name="payChannelType" class="form-control">
+								<option value="">通道分类</option>
+								<option th:each="as:${payChannelType}" th:value="${as.key}" th:text="${as.value}"></option>
+							</select>
+						</div>
+					</div>
+					<table id="exampleTable" data-mobile-responsive="true">
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--shiro控制bootstraptable行内按钮看见性 来自bootdo的创新方案 -->
+		<div>
+			<script type="text/javascript">
+				var s_edit_h = 'hidden';
+				var s_remove_h = 'hidden';
+				var s_batch_audit = 'disabled';
+				var s_batch_oerate = 'disabled';
+				var s_batch_paid = 'disabled';
+				var s_batch_withdrawal = 'disabled';
+				var s_query_money = 'disabled';
+				var s_query_money = 'disabled';
+				var s_send_email = 'hidden';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:merchant:sendEmail">
+			<script type="text/javascript">
+			s_send_email = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:merchant:edit">
+			<script type="text/javascript">
+				s_edit_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:merchant:remove">
+			<script type="text/javascript">
+				var s_remove_h = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:merchant:batchAudit">
+			<script type="text/javascript">
+				var s_batch_audit = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:merchant:batchOperate">
+			<script type="text/javascript">
+				var s_batch_oerate = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="pay:merchant:batchWithdrawal">
+			<script type="text/javascript">
+				var s_batch_withdrawal = '';
+			</script>
+		</div>	
+		<div shiro:hasPermission="pay:merchant:batchPaid">
+			<script type="text/javascript">
+				var s_batch_paid = '';
+			</script>
+		</div>
+		<div shiro:hasPermission="moneyacct:merchant">
+			<script type="text/javascript">
+				var s_query_money = '';
+			</script>
+		</div>
+	<div th:include="include :: footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var outChannels = [[${outChannels}]];
+	    var auditStatus = [[${auditStatus}]];
+	    var auditStatusColor = [[${auditStatusColor}]];
+	    var yesOrNos = [[${yesOrNos}]];
+	    var agentTypes = [[${agentTypes}]];
+	    var statuss = [[${status}]];
+	    var payChannelType = [[${payChannelType}]];
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/plugins/switch/bootstrap-switch.min.js" ></script>
+	<script type="text/javascript" src="/js/appjs/pay/merchant/merchant.js"></script>
+</body>
+</html>

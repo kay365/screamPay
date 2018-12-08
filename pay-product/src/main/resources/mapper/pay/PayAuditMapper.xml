@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.PayAuditDao">
+
+	<select id="get" resultType="com.qh.pay.domain.PayAuditDO">
+		select `order_no`,`merch_no`,`audit_type`,`audit_result`,`auditor`,`audit_time`,`crt_time`,`memo`,amount,poundage from pay_audit 
+		where order_no = #{orderNo} and merch_no = #{merchNo} and audit_type = #{auditType}
+	</select>
+
+	<select id="list" resultType="com.qh.pay.domain.PayAuditDO">
+		select `order_no`,`merch_no`,`audit_type`,`audit_result`,`auditor`,`audit_time`,`crt_time`,`memo`,amount,poundage from pay_audit
+        <where>  
+	  		  <if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+	  		  <if test="beginDate != null and beginDate != ''"> and crt_time <![CDATA[>=]]> #{beginDate} </if>
+	  		  <if test="endDate != null and endDate != ''">  and crt_time <![CDATA[<=]]> #{endDate} </if>
+	  		  <if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+	  		  <if test="auditType != null and auditType != ''"> and audit_type = #{auditType} </if>
+	  		  <if test="auditResult != null and auditResult != ''"> and audit_result = #{auditResult} </if>
+		  </where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by crt_time desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(1) from pay_audit
+		 <where>  
+	  	 	<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+  		 	<if test="beginDate != null and beginDate != ''"> and crt_time <![CDATA[>=]]> #{beginDate} </if>
+  		  	<if test="endDate != null and endDate != ''">  and crt_time <![CDATA[<=]]> #{endDate} </if>
+  		 	<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+  		  	<if test="auditType != null and auditType != ''"> and audit_type = #{auditType} </if>
+  		  	<if test="auditResult != null and auditResult != ''"> and audit_result = #{auditResult} </if>
+		 </where>
+	</select>
+	 
+	<insert id="save" parameterType="com.qh.pay.domain.PayAuditDO">
+		insert into pay_audit
+		(
+			`order_no`, 
+			`merch_no`, 
+			`audit_type`, 
+			`audit_result`, 
+			`auditor`, 
+			`audit_time`, 
+			`crt_time`, 
+			`memo`,
+			amount,
+			poundage
+		)
+		values
+		(
+			#{orderNo}, 
+			#{merchNo}, 
+			#{auditType}, 
+			#{auditResult}, 
+			#{auditor}, 
+			#{auditTime}, 
+			#{crtTime}, 
+			#{memo},
+			#{amount}, 
+			#{poundage}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.qh.pay.domain.PayAuditDO">
+		update pay_audit 
+		<set>
+			<if test="auditResult != null">`audit_result` = #{auditResult}, </if>
+			<if test="auditor != null">`auditor` = #{auditor}, </if>
+			<if test="auditTime != null">`audit_time` = #{auditTime}, </if>
+			<if test="memo != null">`memo` = #{memo}</if>
+		</set>
+		where order_no = #{orderNo} and merch_no = #{merchNo} and audit_type = #{auditType}
+	</update>
+	
+
+</mapper>

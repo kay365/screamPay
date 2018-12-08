@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.PayBankDao">
+	<resultMap type="com.qh.pay.domain.PayBankDO" id="rmPayBank">
+		<result property="banks" column="banks"
+			typeHandler="com.qh.common.config.JsonTypeHandler" />
+	</resultMap>
+	<select id="list" resultMap="rmPayBank">
+		select `company`,`pay_merch`,`card_type`,`banks` from pay_bank
+        <where>  
+  		  <if test="company != null and company != ''"> and company = #{company} </if>
+  		  <if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+  		  <if test="cardType != null and cardType != ''"> and card_type = #{cardType} </if>
+  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by company desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(1) from pay_bank
+		 <where>  
+  		 	<if test="company != null and company != ''"> and company = #{company} </if>
+		    <if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+		    <if test="cardType != null and cardType != ''"> and card_type = #{cardType} </if>
+  		</where>
+	</select>
+
+</mapper>

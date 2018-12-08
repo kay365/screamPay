@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.query.querydao.RecordQueryMerchBalDao">
+
+	<select id="get" resultType="com.qh.pay.domain.RecordMerchBalDO">
+		select `order_no`,`merch_no`,`fee_type`,`order_type`,`before_amt`,`tran_amt`,`after_amt`,`profit_loss`,`crt_date` from record_merch_bal 
+		where order_no = #{orderNo} and merch_no = #{merchNo} and fee_type = #{feeType}
+	</select>
+
+	<select id="list" resultType="com.qh.pay.domain.RecordMerchBalDO">
+		select `order_no`,`merch_no`,`fee_type`,`order_type`,`before_amt`,`tran_amt`,`after_amt`,`profit_loss`,`crt_date` from record_merch_bal
+        <where>
+  		  	<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+  		  	<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+  		  	<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+  		  	<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+  		 	<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+  		  	<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+	  	</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by crt_date desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="listFooter" resultType="com.qh.pay.domain.FooterDO">
+		select sum(if(profit_loss=1,tran_amt,-tran_amt)) tranAmt
+		from record_merch_bal
+		<where>
+			<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+			<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+			<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+			<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+			<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+			<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+			<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+		</where>
+	</select>
+	
+	 <select id="count" resultType="int">
+		select count(1) from record_merch_bal
+        <where>  
+  		  	<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+  		  	<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+	  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+  		  	<if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+  		  	<if test="feeType != null and feeType != ''"> and fee_type = #{feeType} </if>
+  		 	<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+  		  	<if test="profitLoss != null and profitLoss != ''"> and profit_loss = #{profitLoss} </if>
+  		  	
+	  	</where>
+	</select>
+</mapper>

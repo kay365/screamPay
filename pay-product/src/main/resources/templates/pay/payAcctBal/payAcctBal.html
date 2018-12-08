@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+    <div class="wrapper wrapper-content ">
+        <div class="col-sm-12">
+            <div class="ibox">
+                <div class="ibox-body">
+                    <div class="fixed-table-toolbar">
+                        <div class="columns pull-right">
+                            <button class="btn btn-success" onclick="reLoad()">查询</button>
+                        </div>
+                        <div class="columns pull-right col-md-2 nopadding">
+                            <input id="username" type="text" name="username" class="form-control"
+                                   placeholder="请输入用户名">
+                        </div>
+
+                        <div class="columns pull-right col-md-2 nopadding">
+                            <select data-placeholder="用户类型" class="form-control chosen-select">
+                                <option value="">所有用户类型</option>
+                            </select>
+                        </div>
+                    </div>
+                    <table id="exampleTable" data-mobile-responsive="true">
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var userTypes = [[${userTypes}]];
+        /*]]>*/
+    </script>
+    <div id="detail" class="gray-bg hidden">
+        <div class="wrapper wrapper-content ">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="ibox float-e-margins">
+                        <div class="ibox-content">
+                            <form class="form-horizontal m-t" id="detailForm">
+                                <div class="form-group">
+                                    <label class="col-sm-2">apiKey信息：</label>
+                                    <label class="col-sm-10">aadsdads</label>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div th:include="include :: footer"></div>
+    <script type="text/javascript" src="/js/appjs/pay/payAcctBal/payAcctBal.js"></script>
+</body>
+</html>

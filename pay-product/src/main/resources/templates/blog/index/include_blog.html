@@ -1,0 +1,80 @@
+<head th:fragment="header">
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="">
+<meta name="author" content="">
+<title>qhpay</title>
+<link href="/css/bootstrap.min.css" rel="stylesheet">
+<link href="/css/blog/clean-blog.css" rel="stylesheet">
+<link href="/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+<nav th:fragment="nav">
+	<div class="container">
+		<div class="navbar-header page-scroll">
+			<button type="button" class="navbar-toggle" data-toggle="collapse"
+				data-target="#bs-example-navbar-collapse-1">
+				<span class="sr-only">Toggle navigation</span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span> <span
+					class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="index.html" style="font-size: 24px;">BootDo</a>
+		</div>
+		<div class="collapse navbar-collapse"
+			id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="/">主页</a></li>
+				<li><a href="/blog/open/page/about">关于</a></li>
+				<li><a href="/blog/open/page/communication">交流</a></li>
+				<li><a href="/login">登录</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+<div th:fragment="footer">
+	<footer>
+		<div class="container">
+			<div class="row">
+				<div class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1">
+					<ul class="list-inline text-center">
+						<li><a href="https://jq.qq.com/?_wv=1027&k=5ICuFaQ"> <span
+								class="fa-stack fa-lg"> <i
+									class="fa fa-circle fa-stack-2x"></i> <i
+									class="fa fa-qq fa-stack-1x fa-inverse"></i>
+							</span>
+						</a></li>
+						<li><a href="https://www.oschina.net/p/bootdo"> <span
+								class="fa-stack fa-lg"> <i
+									class="fa fa-circle fa-stack-2x"></i> <i
+									class="fa fa-home fa-stack-1x fa-inverse"></i>
+							</span>
+						</a></li>
+						<li><a href="https://github.com/lcg0124/bootdo.git"> <span
+								class="fa-stack fa-lg"> <i
+									class="fa fa-circle fa-stack-2x"></i> <i
+									class="fa fa-github fa-stack-1x fa-inverse"></i>
+							</span>
+						</a></li>
+					</ul>
+					<p class="copyright text-muted">Copyright &copy; bootdo.com
+						2017</p>
+					<p class="copyright text-muted">鲁ICP备17042918号</p>
+
+				</div>
+			</div>
+		</div>
+	</footer>
+	<div
+		style="position: fixed; bottom: 25%; right: 20px; z-index: 100; width: 32px; height: 32px;">
+		<a
+			style="height: 100%; display: block; background: #2f4050; padding: 2px 0px; text-align: center; color: #fff; border-radius: 50%; opacity: .5;"
+			href="javascript:scroll(0,0)" title="返回顶部"><i
+			class="fa fa-arrow-up"></i></a>
+	</div>
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/bootstrap.min.js"></script>
+	<script src="/js/appjs/blog/clean-blog.min.js"></script>
+	<script src="/js/plugins/summernote/summernote.min.js"></script>
+	<script src="/js/plugins/summernote/summernote-zh-CN.js"></script>
+</div>
+

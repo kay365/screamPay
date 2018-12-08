@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="myApp" ng-controller="myqrController">
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<link rel="stylesheet" type="text/css" href="/css/angularCommon.css"/>
+<link rel="stylesheet" type="text/css" href="/css/pay/qr.css"/>
+<script src="/js/jquery.min.js?v=2.1.4"></script>
+<script type="text/javascript" src="/js/angular1.6.7.min.js"></script>
+<script type="text/javascript" src="/js/appjs/pay/payProperty/clipboard.min.js"></script>
+<title>平台支付</title>
+<meta name="keywords" content="jfpay支付系统">
+<meta name="description" content="jfpay支付系统">
+<!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+<script>
+	if (window.top !== window.self) {
+		window.top.location = window.location;
+	}
+</script>
+</head>
+
+<body>
+<div id="qr_topDiv">
+	<a href="javascript:history.go(-1)" target="_self"><img src="/img/payImg/return.png" class="returnImg"></a>
+	<img src="/img/payImg/qr.png" class="qr_log">
+</div>
+<div id="qr_content">
+	<ul>
+		<li class="qr_money">订单金额:<span>¥<x ng-bind="qr_payMoney"></x>(含小数)</span></li>
+		<li class="qr_tipsList">必须输入精确的订单金额才可支付成功</li>
+		<li  ng-show="jfShowImg" class="ng-hide clipTag" style="position:relative;overflow:hidden;">
+			<img ng-show="timeEnouth" style="border: 0;position: absolute;left: -123px;clip: rect(1px 297px 300px 1px);width: 400px;height: 480px;" class="clipImg ng-hide">
+		</li>
+		<li ng-hide="jfShowImg" class="ng-hide clipTag" style="position:relative;overflow:hidden;width: 16rem;height: 13rem;">
+			<img ng-show="timeEnouth" style="border: 0px;position: absolute;left: -94px;clip: rect(1px 333px 366px 1px);width: 400px;height: 480px;" class="clipImg ng-hide">
+		</li>
+		<li class="normal">长按识别二维码</li>
+		<li class="qr_time ng-hide" ng-show="timeEnouth">支付剩余时间 <span ng-bind="printTime"></span></li>
+		<li class="normal">请在倒计时间内完成支付，否则将无法到账！</li>
+		<li class="ng-hide" class="timeEnouth" ng-show="timeEnouth"><a  th:href="${'/pay/return/' + company + '/' + merchNo + '/' + orderNo}" target="_self">支付成功，返回商户！</a></li>
+		<li class="normal">付款即时到账 未到账可联系我们</li>
+	</ul>
+	<div id="black_YingDao" ng-show="timeEnouth" class="ng-hide">
+		<input type="text" style="opacity:0;" value="{{qr_payMoney}}" id="orderNum"/>
+		<div class="blackDiv"></div>
+		<p class="fuzhi" data-clipboard-action="copy" data-clipboard-target="#orderNum" onclick="copyUrl2()">
+			点击此处复制金额
+		</p>
+	</div>
+</div>
+
+	<!-- <div>
+		提示信息：<span th:text="${msg}"></span><br>
+		二维码收款图片：<img width="350" alt="扫码支付" th:src="@{${qr_url}}"><br>
+		支付剩余时间：<span th:text="${remainSec}"></span><br>
+		商户号：<span th:text="${merchNo}"></span><br>
+		订单号：<span th:text="${orderNo}"></span><br>
+		支付金额（￥）：<span th:text="${amount}"></span><br>
+		支付渠道：<span th:text="${outChannel}"></span><br>
+		支付渠道描述：<span th:each="oCh:${outChannelDesc}" th:text="${oCh.key} + '-' + ${oCh.value}"></a><br>
+		支付返回地址：<span th:text="${returnUrl}"></span>
+	</div> -->
+	<!-- 全局js -->
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var jumpData = [[${jumpData}]];
+		var timeOut = [[${remainSec}]];
+		var qr_payMoney = [[${amount}]];
+		var qr_url = [[${qr_url}]];
+		var qr_returnUrl = [[${returnUrl}]];
+		//商户号
+		var merchNo = [[${merchNo}]];
+		//订单号
+		var orderNo = [[${orderNo}]];
+		var company = [[${company}]];
+		//支付方式
+		var outChannel = [[${outChannel}]];
+		
+		var qrAnyMoneyFlag = [[${qrAnyMoneyFlag}]];
+	/*]]>*/
+	</script>
+</body>	
+<script>
+//$(".clipTag").css("background","url("+qr_url+") -94px -121px / 200% 250% no-repeat");
+var myApp = angular.module("myApp", [])
+.controller("myqrController",function($scope,$interval){
+	
+	/* 任意金额   1  0.jpg */
+	if(qrAnyMoneyFlag == 1){
+		$(".clipImg").css("top","-88px");
+	}else{
+		$(".clipImg").css("top","-120px");
+	}
+	if(outChannel == "jfwx"){
+		$scope.jfShowImg = true;
+		$(".qr_log").attr("src","/img/payImg/qr.png");
+		$("#black_YingDao .blackDiv").css({"left":"0","width":"192px","height":"192px"})
+	}else{
+		$scope.jfShowImg = false;
+		$(".qr_log").attr("src","/img/payImg/alipayImg.png");
+		$(".clipImg").css("top","-157px");
+		$("#black_YingDao .blackDiv").css({"left":"-26px","width":"250px","height":"198px"})
+	}
+	$(".clipTag img").attr("src",qr_url);
+	
+	$scope.timeEnouth = true;
+	$scope.timeOut = timeOut;//
+	$scope.qr_payMoney = qr_payMoney;
+	$scope.qr_returnUrl = qr_returnUrl;
+	var timer = $interval(function(){
+        $scope.timeOut -= 1;
+        if($scope.timeOut%60 < 10){
+        	$scope.printTime = "00:0"+parseInt($scope.timeOut/60)+":0"+$scope.timeOut%60
+        }else{
+        	$scope.printTime = "00:0"+parseInt($scope.timeOut/60)+":"+$scope.timeOut%60
+        }
+        if($scope.timeOut <= 0){
+            $interval.cancel(timer);
+            $scope.timeEnouth = false;
+        }
+    },1000);
+	
+});
+function copyUrl2(){
+    var clipboard = new Clipboard('.fuzhi');
+    clipboard.on('success', function(e) {
+        console.log(e);
+        $("#black_YingDao").css("display","none");
+    });
+    clipboard.on('error', function(e) {
+        console.log(e);
+        alert("复制失败!");
+        $("#black_YingDao").css("display","none");
+    });
+}
+</script>
+</html>

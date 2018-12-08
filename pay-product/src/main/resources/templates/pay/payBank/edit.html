@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<head th:include="include :: header"></head>
+<body class="gray-bg">
+	<div class="wrapper wrapper-content ">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox float-e-margins">
+					<div class="ibox-content">
+						<form class="form-horizontal m-t" id="signupForm">
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">支付公司：</label>
+								<div class="col-sm-4">
+									<select id="company" name="company" class="form-control" onfocus = "this.defaultIndex=this.selectedIndex;" 
+											onchange="this.selectedIndex=this.defaultIndex;">
+										<option th:each="companyItem:${companys}" th:value="${companyItem.key}" th:text="${companyItem.value}"
+										th:if="${companyItem.key eq company}" th:selected="selected"></option>
+									</select>
+								</div>
+								<label class="col-sm-2 control-label">支付商户号：</label>
+								<div class="col-sm-4">
+									<input id="payMerch" name="payMerch" th:value="${payMerch=='0'?'':payMerch}" class="form-control" type="text" readonly="readonly">
+								</div>
+							</div>
+							<div class="form-group">	
+								<label class="col-sm-2 control-label">银行卡类型：</label>
+								<div class="col-sm-4">
+									<select id="cardType" name="cardType" class="form-control" onfocus = "this.defaultIndex=this.selectedIndex;" 
+											onchange="this.selectedIndex=this.defaultIndex;">
+										<option th:each="cardTypeItem:${cardTypes}" th:value="${cardTypeItem.key}" th:text="${cardTypeItem.value}"
+										th:if="${cardTypeItem.key eq cardType}" th:selected="selected"></option>
+									</select>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-2 control-label">银行卡列表：</label>
+								<label class="col-sm-4" style="cursor: pointer">
+									<input id="bankCheckAll" type="checkbox" th:text="全选" th:value="1"  th:checked="${#lists.size(banks)>0}">
+								</label>
+							</div>
+							<div id="divItemAll" class = "row col-sm-12">
+								<label class="col-sm-3" th:each="bank:${bankCodes}" style="cursor: pointer">
+									<input type="checkbox" th:value="${bank.key}"
+									th:text="${bank.value}"  th:checked="${#lists.contains(banks, bank.key)}">
+								</label>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-8 col-sm-offset-3">
+									<button type="submit" class="btn btn-primary">提交</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+	</div>
+	</div>
+	<div th:include="include::footer"></div>
+	<script th:inline="javascript">
+	/*<![CDATA[*/
+	    var cardTypes = [[${cardTypes}]];
+	    var companys = [[${companys}]];
+	    var bankCodes = [[${bankCodes}]];
+	    var company = [[${company}]];
+	    var payMerch = [[${payMerch}]];
+	    var cardType = [[${cardType}]];
+	/*]]>*/
+	</script>
+	<script type="text/javascript" src="/js/appjs/pay/payBank/edit.js">
+	</script>
+</body>
+</html>

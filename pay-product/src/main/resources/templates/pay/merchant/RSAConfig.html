@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>RSA秘钥设置</title>
+<head th:include="include :: header"></head>
+<link href="/css/layui.css" rel="stylesheet">
+
+<body class="gray-bg">
+<div class="wrapper">
+    <div class="col-sm-12">
+        <div>
+            <text type="hidden" id="merchNo" value="${merchant.merchNo}"></text>
+        </div>
+        <div>
+            <label>公钥配置</label>
+            <textarea id="publicKey" style="height:150px;width:100% " required="required"></textarea>
+        </div>
+        <div id="privateKeyDiv" >
+            <label >私钥配置</label>
+            <textarea id="privateKey" style="height:150px;width:100% " readonly="readonly"/>
+        </div>
+        <div>
+            <button shiro:hasPermission="pay:merchant:createPrivateKey" class="btn btn-primary" id="createPrivateKey">生成秘钥</button>
+            <button class="btn btn-primary" id="submit">确定</button>
+        </div>
+
+
+    </div>
+</div>
+<div th:include="include::footer"></div>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    var merchant = [[${merchant}]];
+    /*]]>*/
+</script>
+<script type="text/javascript" src="/js/plugins/layui/layui.js"></script>
+<script type="text/javascript" src="/js/appjs/pay/merchant/RSAConfig.js"></script>
+</body>
+</html>

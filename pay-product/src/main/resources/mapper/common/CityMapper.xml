@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.common.dao.CityDao">
+    <select id="list" resultType="com.qh.common.domain.CityDO">
+        select `id`,`name` from cfg_cities
+    </select>
+
+    <select id="listByProvinceId" resultType="com.qh.common.domain.CityDO">
+        select `id`,`name` from cfg_cities
+        where provinceid = #{provinceId}
+    </select>
+
+    <select id="get" resultType="com.qh.common.domain.CityDO">
+        select `id`,`name` from cfg_cities
+        where id = #{cityId}
+    </select>
+</mapper>

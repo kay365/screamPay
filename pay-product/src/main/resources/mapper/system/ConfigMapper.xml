@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.system.dao.ConfigDao">
+
+	<select id="get" resultType="com.qh.system.domain.ConfigDO">
+		select `id`,`config_item`,`config_value`,`config_name`,`parent_item`,`is_close` from sys_config where id = #{value}
+	</select>
+
+	<select id="getByItem" resultType="com.qh.system.domain.ConfigDO">
+		select `id`,`config_item`,`config_value`,`config_name`,`parent_item`,`is_close` from sys_config where config_item = #{value}
+	</select>
+	<select id="list" resultType="com.qh.system.domain.ConfigDO">
+		select `id`,`config_item`,`config_value`,`config_name`,`parent_item`,`is_close` from sys_config
+        <where>  
+		  		  <if test="configItem != null and configItem != ''"> and config_item = #{configItem} </if>
+		  		  <if test="configName != null and configName != ''"> and config_name = #{configName} </if>
+		  		  <if test="parentItem != null and parentItem != ''"> and parent_item = #{parentItem} </if>
+		  		  <if test="isClose != null and isClose != ''"> and is_close = #{isClose} </if>
+		  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(*) from sys_config
+		 <where>  
+		  		  <if test="id != null and id != ''"> and id = #{id} </if>
+		  		  <if test="configItem != null and configItem != ''"> and config_item = #{configItem} </if>
+		  		  <if test="configValue != null and configValue != ''"> and config_value = #{configValue} </if>
+		  		  <if test="configName != null and configName != ''"> and config_name = #{configName} </if>
+		  		  <if test="parentItem != null and parentItem != ''"> and parent_item = #{parentItem} </if>
+		  		  <if test="isClose != null and isClose != ''"> and is_close = #{isClose} </if>
+		  		</where>
+	</select>
+	 
+	<insert id="save" parameterType="com.qh.system.domain.ConfigDO">
+		insert into sys_config
+		(
+			`id`, 
+			`config_item`, 
+			`config_value`, 
+			`config_name`, 
+			`parent_item`, 
+			`is_close`
+		)
+		values
+		(
+			#{id}, 
+			#{configItem}, 
+			#{configValue}, 
+			#{configName}, 
+			#{parentItem}, 
+			#{isClose}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="com.qh.system.domain.ConfigDO">
+		update sys_config 
+		<set>
+			<if test="configValue != null">`config_value` = #{configValue}, </if>
+			<if test="configName != null">`config_name` = #{configName}, </if>
+			<if test="isClose != null">`is_close` = #{isClose}</if>
+		</set>
+		where config_item = #{configItem}
+	</update>
+	
+	<delete id="remove">
+		delete from sys_config where id = #{value}
+	</delete>
+	
+	<delete id="batchRemove">
+		delete from sys_config where id in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

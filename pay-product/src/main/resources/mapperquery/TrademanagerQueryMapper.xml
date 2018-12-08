@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.trademanager.querydao.TrademanagerQueryDao">
+
+	<sql id = "commonColumns">
+		`order_no`,`merch_no`,`pay_company`,`pay_merch`,`out_channel`,`amount`,`title`,`currency`,`order_state`,`return_url`,`notify_url`,`req_time`,`user_id`,`bank_no`,`memo`,`crt_date`,
+		`real_amount`,`cost_amount`,`qh_amount`,`agent_amount`,`msg`,`business_no`,`clear_state`,`order_type`,sub_agent_amount
+	</sql>
+	<sql id="orderColumns">
+		<include refid="commonColumns"></include>,req_ip,`product`,notice_state,clear_amount
+	</sql>
+	<sql id="orderAcpColumns">
+		<include refid="commonColumns"></include>,user_type,card_type,acct_type,bank_name,cert_no,mobile,notice_state
+	</sql>
+	<sql id="paySql">
+		<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+		<if test="businessNo != null and businessNo != ''"> and business_no = #{businessNo} </if>
+  		<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+		<choose> 
+ 			<when test="userType == 2">
+ 				 <if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+ 				 and merch_no = #{username}
+ 			</when>
+           <when test="userType == 6">
+	           	<if test="merchNo != null and merchNo != ''"> 
+	           		and merch_no =(select a.merch_no from merchant a where merch_no = #{merchNo} and a.parent_agent = #{username})
+	           	</if>
+	           	<if test="merchNo == null or merchNo == ''">
+				 	and merch_no in(select a.merch_no from merchant a where a.parent_agent = #{username})
+				</if>
+           </when>
+           <when test="userType == 3">
+           	  <if test="merchNo != null and merchNo != ''"> 
+           		and merch_no = (select a.merch_no from merchant a where merch_no = #{merchNo}
+           	 	<if test="subAgent == null or subAgent == ''">
+           		 	and (a.parent_agent = #{username} or a.parent_agent in(select agent_number from agent c where c.parent_agent=#{username})))
+           	 	</if>
+           		<if test="subAgent != null and subAgent != ''">
+           			and a.parent_agent = (select agent_number from agent c where  c.agent_number = #{subAgent} and c.parent_agent=#{username}))
+           	 	</if>
+           	 </if>
+           	 <if test="merchNo == null or merchNo == ''">
+           	 	 and merch_no in(select a.merch_no from merchant a where
+			 	<if test="subAgent != null and subAgent != ''">
+           			a.parent_agent = (select agent_number from agent c where  c.agent_number = #{subAgent} and c.parent_agent=#{username}))
+           	 	</if>
+           	 	<if test="subAgent == null or subAgent == ''">
+           		 	a.parent_agent = #{username})
+           	 	</if>
+			 </if>
+           </when>
+           <when test="userType == 0">
+ 				 <if test="merchNo != null and merchNo != ''"> 
+           		and merch_no = #{merchNo}
+           	 </if>
+           	 <if test="(merchNo == null or merchNo == '') and (subAgent != null and subAgent != '')">
+           		and merch_no in(select a.merch_no from merchant a where a.parent_agent = #{subAgent})
+			 </if>
+			 <if test="(merchNo == null or merchNo == '') and (subAgent == null or subAgent == '')
+			 			and (agent != null and agent != '')">
+           		and merch_no in(select a.merch_no from merchant a where a.parent_agent = #{agent})
+			 </if>
+ 			</when>
+        </choose>
+  		<if test="payCompany !=null and payCompany !=''"> and pay_company = #{payCompany}</if>
+  		<if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+  		<if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+  		<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+  		<if test="orderState !=null and orderState !=''"> 
+  			and (order_state = #{orderState}
+  			<if test="orderState == 3"> or order_state = 0</if>
+  			<if test="orderState == 2"> or order_state = 4</if>
+  			)
+  		</if>
+  		<if test="clearState !=null and clearState !=''"> and clear_state = #{clearState}</if>
+  		<if test="noticeState != null and noticeState != ''"> and notice_state = #{noticeState} </if>
+	</sql>
+	
+	<sql id="withdrawSql">
+		<if test="orderNo != null and orderNo != ''"> and order_no = #{orderNo} </if>
+		<if test="businessNo != null and businessNo != ''"> and business_no = #{businessNo} </if>
+  		<if test="beginDate != null and beginDate != ''"> and crt_date <![CDATA[>=]]> #{beginDate} </if>
+  		<if test="endDate != null and endDate != ''">  and crt_date <![CDATA[<=]]> #{endDate} </if>
+		<choose> 
+ 		   <when test="userType == 2">
+ 			   and merch_no = #{username}
+ 		   </when>
+           <when test="userType == 6">
+	           and merch_no = #{username}
+           </when>
+           <when test="userType == 3">
+           	   and merch_no = #{username}
+           </when>
+           <when test="userType == 0">
+ 			 <if test="merchNo != null and merchNo != ''"> 
+           		and merch_no = #{merchNo}
+           	 </if>
+           	 <if test="(merchNo == null or merchNo == '') and (subAgent != null and subAgent != '')">
+           		and merch_no in(select a.merch_no from merchant a where a.parent_agent = #{subAgent})
+			 </if>
+			 <if test="(merchNo == null or merchNo == '') and (subAgent == null or subAgent == '')
+			 			and (agent != null and agent != '')">
+           		and merch_no in (select agent_number from agent c where c.parent_agent=#{agent})
+			 </if>
+			 <if test="(merchNo == null or merchNo == '') and (subAgent == null or subAgent == '')
+			 			and (agent == null and agent == '')">
+           		and merch_no in (select agent_number from agent c where c.level = 1)
+			 </if>
+ 			</when>
+        </choose>
+  		<if test="payCompany !=null and payCompany !=''"> and pay_company = #{payCompany}</if>
+  		<if test="payMerch != null and payMerch != ''"> and pay_merch = #{payMerch} </if>
+  		<if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+  		<if test="orderType != null and orderType != ''"> and order_type = #{orderType} </if>
+  		<if test="orderState !=null and orderState !=''"> 
+  			and (order_state = #{orderState}
+  			<if test="orderState == 3"> or order_state = 0</if>
+  			<if test="orderState == 2"> or order_state = 4</if>
+  			)
+  		</if>
+  		<if test="clearState !=null and clearState !=''"> and clear_state = #{clearState}</if>
+	</sql>
+	
+	<select id="get" resultType="com.qh.pay.api.Order">
+		select
+		<include refid="orderColumns"></include>
+		from pay_order where order_no = #{orderNo} and merch_no = #{merchNo}
+	</select>
+	<select id="payList" resultType="com.qh.pay.api.Order">
+		select
+		<include refid="orderColumns"></include>
+		from pay_order
+		<where>
+			<choose>
+				<when test="orderType == 0 or orderType ==1">
+					<include refid="paySql"></include>
+				</when>
+				<when test="orderType == 2 or orderType ==3">
+					<include refid="withdrawSql"></include>
+				</when>
+			</choose>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by crt_date desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="payListFooter" resultType="com.qh.pay.domain.FooterDO">
+		select
+		sum(`amount`) amount,sum(`real_amount`) realAmount,sum(`cost_amount`) costAmount,sum(`qh_amount`) qhAmount,sum(`agent_amount`) agentAmount,sum(`sub_agent_amount`) subAgentAmount
+		from pay_order
+		<where>
+			<choose>
+				<when test="orderType == 0 or orderType ==1">
+					<include refid="paySql"></include>
+				</when>
+				<when test="orderType == 2 or orderType ==3">
+					<include refid="withdrawSql"></include>
+				</when>
+			</choose>
+		</where>
+	</select>
+	<select id="payListStati" resultType="com.qh.pay.domain.FooterDO">
+		select count(1) orderSum,sum(case when order_state = 1 then 1 else 0 end) succSum,sum(case when order_state in (0,3) then 1 else 0 end) ingSum,sum(case when order_state in (2,4) then 1 else 0 end) errSum,
+		sum(case when order_state = 1 then `amount` else 0 end) amount,
+		sum(case when order_state = 1 then `qh_amount`  else 0 end) qhAmount,
+		sum(case when order_state = 1 then `clear_amount`  else 0 end) clearAmount
+		<!-- ,sum(case when order_state = 1 then `cost_amount`  else 0 end) costAmount
+		,sum(case when order_state = 1 then `agent_amount`  else 0 end) agentAmount,
+		sum(case when order_state = 1 then `sub_agent_amount`  else 0 end) subAgentAmount -->
+		from pay_order
+		<where>
+			<choose>
+				<when test="orderType == 0 or orderType ==1">
+					<include refid="paySql"></include>
+				</when>
+				<when test="orderType == 2 or orderType ==3">
+					<include refid="withdrawSql"></include>
+				</when>
+			</choose>
+		</where>
+	</select>
+	<select id="payCount" resultType="int">
+		select count(1) from pay_order
+		<where>
+			<choose>
+				<when test="orderType == 0 or orderType ==1">
+					<include refid="paySql"></include>
+				</when>
+				<when test="orderType == 2 or orderType ==3">
+					<include refid="withdrawSql"></include>
+				</when>
+			</choose>
+		</where>
+	</select>
+	
+	
+	<select id="getAcp" resultType="com.qh.pay.api.Order">
+		select
+		<include refid="orderAcpColumns"></include>
+		from pay_order_acp where order_no = #{orderNo} and merch_no = #{merchNo}
+	</select>
+	<select id="acpList" resultType="com.qh.pay.api.Order">
+		select
+		<include refid="orderAcpColumns"></include>
+		from pay_order_acp
+		<where>
+			<choose>
+				<when test="orderType == 0 or orderType ==1">
+					<include refid="paySql"></include>
+				</when>
+				<when test="orderType == 2 or orderType ==3">
+					<include refid="withdrawSql"></include>
+				</when>
+			</choose>
+		</where>
+		<choose>
+			<when test="sort != null and sort.trim() != ''">
+				order by ${sort} ${order}
+			</when>
+			<otherwise>
+				order by crt_date desc
+			</otherwise>
+		</choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="acpListFooter" resultType="com.qh.pay.domain.FooterDO">
+		select
+		sum(`amount`) amount,sum(`real_amount`) realAmount,sum(`cost_amount`) costAmount,sum(`qh_amount`) qhAmount,sum(`agent_amount`) agentAmount,sum(`sub_agent_amount`) subAgentAmount
+		from pay_order_acp
+		<where>
+			<choose>
+				<when test="orderType == 0 or orderType ==1">
+					<include refid="paySql"></include>
+				</when>
+				<when test="orderType == 2 or orderType ==3">
+					<include refid="withdrawSql"></include>
+				</when>
+			</choose>
+		</where>
+	</select>
+	<select id="acpListStati" resultType="com.qh.pay.domain.FooterDO">
+		select count(1) orderSum,sum(case when order_state = 1 then 1 else 0 end) succSum,sum(case when order_state in (0,3) then 1 else 0 end) ingSum,sum(case when order_state in (2,4) then 1 else 0 end) errSum,
+		sum(case when order_state = 1 then `amount` else 0 end) amount,
+		sum(case when order_state = 1 then `qh_amount`  else 0 end) qhAmount,
+		sum(case when order_state in (0,3) then `amount` else 0 end) amountIng,
+		sum(case when order_state in (0,3) then `qh_amount`  else 0 end) qhAmountIng
+		<!-- ,sum(case when order_state = 1 then `cost_amount`  else 0 end) costAmount
+		,sum(case when order_state = 1 then `agent_amount`  else 0 end) agentAmount,
+		sum(case when order_state = 1 then `sub_agent_amount`  else 0 end) subAgentAmount -->
+		from pay_order_acp
+		<where>
+			<choose>
+				<when test="orderType == 0 or orderType ==1">
+					<include refid="paySql"></include>
+				</when>
+				<when test="orderType == 2 or orderType ==3">
+					<include refid="withdrawSql"></include>
+				</when>
+			</choose>
+		</where>
+	</select>
+	<select id="acpCount" resultType="int">
+		select count(1) from pay_order_acp
+		<where>
+			<choose>
+				<when test="orderType == 0 or orderType ==1">
+					<include refid="paySql"></include>
+				</when>
+				<when test="orderType == 2 or orderType ==3">
+					<include refid="withdrawSql"></include>
+				</when>
+			</choose>
+		</where>
+	</select>
+</mapper>

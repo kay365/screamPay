@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qh.pay.dao.PayQrConfigDao">
+
+	<resultMap type="com.qh.pay.domain.PayQrConfigDO" id="rmPayQrConfig">
+		<result property="qrs" column="qrs"
+			typeHandler="com.qh.common.config.JsonTypeHandler" />
+	</resultMap>
+
+	<select id="list" resultMap = "rmPayQrConfig">
+		select `id`,`merch_no`,`out_channel`,`account_no`,`account_name`,`account_phone`,`service_tel`,`memo`,cost_rate,jf_rate,`api_key` from pay_qr_config
+        <where>  
+  		  <if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+  		  <if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+  		  <if test="accountNo != null and accountNo != ''"> and account_no = #{accountNo} </if>
+  		  <if test="accountName != null and accountName != ''"> and account_name = #{accountName} </if>
+  		</where>
+        <choose>
+            <when test="sort != null and sort.trim() != ''">
+                order by ${sort} ${order}
+            </when>
+			<otherwise>
+                order by id desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="count" resultType="int">
+		select count(1) from pay_qr_config
+		 <where>  
+  		  <if test="merchNo != null and merchNo != ''"> and merch_no = #{merchNo} </if>
+  		  <if test="outChannel != null and outChannel != ''"> and out_channel = #{outChannel} </if>
+  		  <if test="accountNo != null and accountNo != ''"> and account_no = #{accountNo} </if>
+  		  <if test="accountName != null and accountName != ''"> and account_name = #{accountName} </if>
+  		</where>
+	</select>
+	 
+	<update id="updateByCode" parameterType="com.qh.pay.domain.PayQrConfigDO">
+		update pay_qr_config 
+		<set>
+			<if test="accountName != null">`account_name` = #{accountName}, </if>
+			<if test="accountPhone != null">`account_phone` = #{accountPhone}, </if>
+			<if test="accountNo != null">`account_no` = #{accountNo}, </if>
+			<if test="serviceTel != null">`service_tel` = #{serviceTel}, </if>
+			<if test="memo != null">`memo` = #{memo}, </if>
+			<if test="costRate != null">`cost_rate` = #{costRate}, </if>
+			<if test="jfRate != null">`jf_rate` = #{jfRate}, </if>
+			<if test="apiKey != null">`api_key` = #{apiKey}, </if>
+		</set>
+		where merch_no = #{merchNo} and out_channel = #{outChannel} 
+	</update>
+	
+	<delete id="remove">
+		delete from pay_qr_config where merch_no = #{merchNo} and out_channel = #{outChannel} 
+	</delete>
+	
+</mapper>
