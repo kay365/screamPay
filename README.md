@@ -80,6 +80,7 @@ V1.0.0 |2018-12-08 |首次发布
 ### 项目部署
 ***
 1.pay_juhe.sql为数据库，直接导入mysql即可。
+
 2.application.yml为主配置文件。
 ```html
         port为工作端口，active为使用的具体配置文件，可选dev(意为使用application-dev.yml)和pro(意为使用application-pro.yml)。
